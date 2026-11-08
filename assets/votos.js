@@ -73,5 +73,19 @@
     return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${n + 4} ${n + 4}" shape-rendering="crispEdges"><rect width="100%" height="100%" fill="#fff"/><path d="${d}" fill="${cor || '#034578'}"/></svg>`;
   }
 
-  window.Votos = { votar, ouvir, token, qrSvg, limpa };
+  // Banco de itens: grava só a 1ª resposta de cada item (regra do banco recusa a 2ª). Anônimo.
+  async function registrar(form, item, letra) {
+    try {
+      const t = await token();
+      await fetch(`${FB.db}/respostas/${limpa(form)}/${t.uid}/${item}.json?auth=${t.id}`, { method: 'PUT', body: JSON.stringify({ r: letra, t: { '.sv': 'timestamp' } }) });
+    } catch (e) {}
+  }
+  async function contexto(form, ctx) {
+    try {
+      const t = await token();
+      await fetch(`${FB.db}/respostas/${limpa(form)}/${t.uid}/_ctx.json?auth=${t.id}`, { method: 'PUT', body: JSON.stringify(Object.assign({}, ctx, { t: { '.sv': 'timestamp' } })) });
+    } catch (e) {}
+  }
+
+  window.Votos = { votar, ouvir, token, qrSvg, limpa, registrar, contexto };
 })();

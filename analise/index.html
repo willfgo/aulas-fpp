@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="pt-BR"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Análise de itens · Prof. Wilton · FPP</title>
+<link rel="stylesheet" href="../assets/fpp.css">
+<meta name="theme-color" content="#005CA0">
+<style>
+main{max-width:1180px}
+table{width:100%;border-collapse:collapse;margin-top:8px;font-size:14px}
+td,th{padding:8px 6px;border-bottom:1px solid var(--linha);text-align:left;vertical-align:top}
+th{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--azul)}
+td.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.dist{display:flex;gap:3px;align-items:flex-end;height:34px}
+.dist i{display:block;width:22px;background:var(--azul-md);position:relative}
+.dist i.ok{background:var(--azul)}
+.dist i b{position:absolute;bottom:-16px;left:0;right:0;text-align:center;font-size:10px;font-style:normal;color:var(--cinza)}
+.flag{display:inline-block;font-size:11px;font-weight:800;padding:2px 6px;margin:1px 3px 1px 0;background:#fff7c2;color:#6b5500}
+.flag.ok{background:var(--azul-cl);color:var(--azul-esc)}
+.resumo{display:flex;gap:28px;flex-wrap:wrap;margin:6px 0 4px}
+.resumo div{border-top:4px solid var(--azul);padding-top:6px;min-width:150px}
+.resumo b{display:block;font-size:30px;color:var(--azul)}.resumo span{font-size:12px;color:var(--cinza)}
+#login,#negado{display:none}
+.tema{font-size:13px;color:var(--cinza)}
+</style>
+</head><body>
+<header class="fpp"><div class="wrap">
+  <img src="../assets/img/fpp-logo-branco.png" alt="Faculdades Pequeno Príncipe">
+  <p class="k">Professor · banco de itens</p>
+  <h1>Análise de <span class="hl">itens</span></h1><p id="modoTeste" style="display:none;color:var(--amar);font-weight:800">MODO TESTE — dados simulados</p>
+  <p>Teoria clássica dos testes: dificuldade (p), discriminação (ponto-bisserial corrigido) e distratores. Só a 1ª resposta de cada aluno conta.</p>
+</div></header>
+<main>
+  <div id="login"><p>Entre com a conta Google do professor.</p><button class="btn" id="entrar">Entrar com Google</button></div>
+  <div id="negado" class="aviso">Acesso só para a conta do professor.</div>
+  <div id="app" style="display:none">
+    <div class="nav" style="margin-top:16px;display:flex;gap:10px;flex-wrap:wrap"><button class="btn lin" id="csv">Baixar respostas (CSV para R/Excel)</button><button class="btn lin" id="atualizar">Atualizar</button></div>
+    <div id="out"></div>
+    <h2>Como ler</h2>
+    <p class="src"><b>p</b> = proporção de acerto (ideal para seleção em prova: ~0,3–0,8). <b>r</b> = correlação ponto-bisserial do item com o escore nos demais itens (≥ 0,30 boa; 0,20–0,29 aceitável; &lt; 0,20 revisar; negativa = possível erro de gabarito ou ambiguidade). Distrator escolhido por &lt; 5% = não funcional. Com n &lt; 30 os índices são instáveis; com n &lt; 100, provisórios. <b>Pré-teste (sala)</b>: voto ao vivo, na primeira exposição ao tema. <b>Pós-teste (quiz)</b>: em casa, sem supervisão, depois da aula — tende a superestimar o acerto. Pré e pós só são comparáveis nos itens que aparecem nos dois momentos (itens-âncora).</p>
+  </div>
+</main>
+<footer class="fpp"><span><a href="../painel/">← painel de aulas</a></span><img src="../assets/img/fpp-logo-azul.png" alt="FPP"></footer>
+<script src="../assets/firebase.js"></script>
+<script src="../risco-sca/casos.js"></script>
+<script src="../risco-sca/quiz-dados.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script>
+const $=s=>document.querySelector(s),PROF='willfgo@gmail.com',L='ABCDE';
+firebase.initializeApp(FB_CONFIG);const auth=firebase.auth(),db=firebase.database();
+// catálogo de itens (gabarito e rótulo)
+const ITENS={};
+Object.values(CASOS).forEach(c=>ITENS[c.id]={rot:c.titulo,nalt:c.opcoes.length,certa:c.certa,tipo:'Pré-teste (sala)'});
+QUIZ.forEach((q,i)=>ITENS[q.id]={rot:'Quiz '+(i+1)+' · '+q.q.replace(/<[^>]+>/g,'').slice(0,90)+'…',nalt:q.o.length,certa:L[q.c],tipo:'Pós-teste (quiz)'});
+const TESTE=new URLSearchParams(location.search).has('teste'),eTeste=f=>f.includes('teste');
+const GRUPOS=[{nome:'Pré-teste — votação ao vivo em sala',filtro:f=>f.startsWith('aula-')&&eTeste(f)===TESTE,minItens:1},{nome:'Pós-teste — quiz de revisão',filtro:f=>f.startsWith('risco-sca-quiz')&&eTeste(f)===TESTE,minItens:5}];
+let BRUTO={};if(TESTE)document.getElementById('modoTeste').style.display='block';
+const fmt=(x,d=2)=>Number.isFinite(x)?x.toFixed(d).replace('.',','):'—';
+function corr(x,y){const n=x.length;if(n<3)return NaN;const mx=x.reduce((a,b)=>a+b)/n,my=y.reduce((a,b)=>a+b)/n;let sxy=0,sx=0,sy=0;for(let i=0;i<n;i++){sxy+=(x[i]-mx)*(y[i]-my);sx+=(x[i]-mx)**2;sy+=(y[i]-my)**2}return sx&&sy?sxy/Math.sqrt(sx*sy):NaN}
+function analisa(g){
+  // pessoas = form|uid
+  const pessoas=[];
+  for(const f in BRUTO){if(!g.filtro(f))continue;for(const u in BRUTO[f]){const r={};let ctx=BRUTO[f][u]._ctx||{};for(const k in BRUTO[f][u])if(k!=='_ctx'&&ITENS[k])r[k]=BRUTO[f][u][k].r;if(Object.keys(r).length)pessoas.push({f,u,r,ctx})}}
+  const ids=[...new Set(pessoas.flatMap(p=>Object.keys(p.r)))].sort();
+  const linhas=ids.map(id=>{
+    const it=ITENS[id],resp=pessoas.filter(p=>p.r[id]);const n=resp.length;
+    const dist={};L.slice(0,it.nalt).split('').forEach(l=>dist[l]=0);resp.forEach(p=>dist[p.r[id]]=(dist[p.r[id]]||0)+1);
+    const p=n?dist[it.certa]/n:NaN;
+    const elig=resp.filter(pp=>Object.keys(pp.r).length>=g.minItens&&Object.keys(pp.r).length>1);
+    const x=[],y=[];elig.forEach(pp=>{const outros=Object.keys(pp.r).filter(k=>k!==id);x.push(pp.r[id]===it.certa?1:0);y.push(outros.filter(k=>pp.r[k]===ITENS[k].certa).length/outros.length)});
+    const r=g.minItens>1?corr(x,y):NaN;
+    const flags=[];if(n<30)flags.push(['n < 30','']);else if(n<100)flags.push(['provisório','ok']);
+    if(p>0.9)flags.push(['muito fácil',''] );if(p<0.2)flags.push(['muito difícil','']);
+    if(Number.isFinite(r)){if(r<0)flags.push(['r negativo — conferir gabarito','']);else if(r<0.2)flags.push(['discriminação baixa',''])}
+    for(const l in dist)if(l!==it.certa&&n>=20&&dist[l]/n<0.05)flags.push(['distrator '+l+' não funcional','']);
+    return {id,it,n,p,r,dist,flags};
+  });
+  return {pessoas,linhas};
+}
+function render(){
+  let h='';
+  GRUPOS.forEach(g=>{const {pessoas,linhas}=analisa(g);
+    const per={};pessoas.forEach(p=>{const k=p.ctx.periodo||'não informado';per[k]=(per[k]||0)+1});
+    const sessoes=new Set(pessoas.map(p=>p.f)).size;
+    h+=`<h2>${g.nome}</h2><div class="resumo"><div><span>respondentes</span><b>${pessoas.length}</b></div><div><span>sessões / formulários</span><b>${sessoes}</b></div><div><span>período informado</span><b style="font-size:15px;line-height:1.5">${Object.entries(per).map(([k,v])=>k+': '+v).join(' · ')||'—'}</b></div></div>`;
+    if(!linhas.length){h+='<p class="src">Sem respostas ainda.</p>';return}
+    h+=`<table><thead><tr><th>Item</th><th>n</th><th>p</th><th>r</th><th>Distribuição (escuro = gabarito)</th><th>Alertas</th></tr></thead><tbody>`+
+      linhas.map(l=>{const mx=Math.max(1,...Object.values(l.dist));return `<tr><td><b>${l.id}</b><br><span class="tema">${l.it.rot}</span></td><td class="num">${l.n}</td><td class="num">${fmt(l.p)}</td><td class="num">${fmt(l.r)}</td>
+      <td><div class="dist">${Object.entries(l.dist).map(([k,v])=>`<i class="${k===l.it.certa?'ok':''}" style="height:${Math.max(2,34*v/mx)}px" title="${k}: ${v}"><b>${k} ${l.n?Math.round(100*v/l.n):0}%</b></i>`).join('')}</div></td>
+      <td>${l.flags.map(([t,c])=>`<span class="flag ${c}">${t}</span>`).join('')||'<span class="flag ok">sem alertas</span>'}</td></tr>`}).join('')+'</tbody></table>';
+  });
+  $('#out').innerHTML=h;
+}
+async function carrega(){const s=await db.ref('respostas').once('value');BRUTO=s.val()||{};delete BRUTO['teste-form'];render()}
+$('#atualizar').onclick=carrega;
+$('#csv').onclick=()=>{
+  const ids=Object.keys(ITENS).sort(),cab=['formulario','respondente','modo','periodo',...ids];const rows=[cab.join(';')];
+  for(const f in BRUTO){if(eTeste(f)!==TESTE)continue;for(const u in BRUTO[f]){const d=BRUTO[f][u],c=d._ctx||{};rows.push([f,u.slice(0,8),c.modo||'',c.periodo||'',...ids.map(k=>d[k]?d[k].r:'')].join(';'))}}
+  rows.push(['GABARITO','','','',...ids.map(k=>ITENS[k].certa)].join(';'));
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['\ufeff'+rows.join('\n')],{type:'text/csv;charset=utf-8'}));a.download='respostas-itens.csv';a.click()};
+$('#entrar').onclick=()=>{const p=new firebase.auth.GoogleAuthProvider();p.setCustomParameters({login_hint:PROF});auth.signInWithPopup(p).catch(e=>alert(e.message))};
+auth.onAuthStateChanged(u=>{$('#login').style.display=u?'none':'block';const ok=u&&u.email===PROF;$('#negado').style.display=u&&!ok?'block':'none';$('#app').style.display=ok?'block':'none';if(ok)carrega().catch(e=>{$('#out').innerHTML='<p class="aviso">Erro ao ler: '+e.message+'</p>'})});
+</script>
+</body></html>

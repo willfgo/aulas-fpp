@@ -13,6 +13,13 @@ input{width:100%;font:inherit;font-size:20px;padding:14px;border:2px solid var(-
 #st{margin-top:18px;padding:14px 16px;font-size:16px;display:none}
 #st.ok{display:block;background:var(--azul-cl);color:var(--azul-esc);font-weight:700}
 #st.erro{display:block;background:#fff7c2}
+.av{display:none;margin-top:30px}.av.show{display:block}
+.q{margin:18px 0 6px;font-weight:700;color:var(--azul);font-size:16px}
+.esc{display:flex;gap:6px}.esc button{flex:1;font:inherit;font-size:18px;font-weight:800;padding:12px 0;border:2px solid var(--azul);background:#fff;color:var(--azul);cursor:pointer}
+.esc button.sel{background:var(--azul);color:#fff}
+.esc-leg{display:flex;justify-content:space-between;font-size:12px;color:var(--cinza);margin-top:3px}
+textarea{width:100%;font:inherit;font-size:16px;padding:10px;border:2px solid var(--linha);min-height:70px}
+#avst{margin-top:14px;font-weight:700;color:var(--azul-esc)}
 </style>
 </head><body>
 <header class="fpp"><div class="wrap">
@@ -27,6 +34,15 @@ input{width:100%;font:inherit;font-size:20px;padding:14px;border:2px solid var(-
     <button class="btn" type="submit" id="b">Registrar presença</button>
   </form>
   <div id="st"></div>
+  <section class="av" id="av">
+    <h2>Avalie a aula <span style="font-weight:500;text-transform:none;letter-spacing:0">(1 minuto, opcional)</span></h2>
+    <p class="src">Anônima: a avaliação não aparece junto do seu nome.</p>
+    <div id="perguntas"></div>
+    <p class="q">O que mais ajudou você a aprender?</p><textarea id="ajudou" maxlength="600"></textarea>
+    <p class="q">O que poderia melhorar?</p><textarea id="melhorar" maxlength="600"></textarea>
+    <button class="btn" id="enviarAv" type="button">Enviar avaliação</button>
+    <div id="avst"></div>
+  </section>
   <p class="src" style="margin-top:22px">Um registro por celular. Seu nome vai só para a lista do professor. Se errar, corrija e envie de novo enquanto a chamada estiver aberta.</p>
 </main>
 <script src="../assets/firebase.js"></script>
@@ -39,7 +55,7 @@ async function aberta(){try{const r=await fetch(`${FB.db}/chamada/${sala}.json`)
   if(!sala){msg('erro','Link de chamada inválido. Escaneie o QR de novo.');$('#b').disabled=true;return}
   const m=sala.match(/^(.*)-(\d{4})-(\d{2})-(\d{2})$/);if(m)$('#k').textContent='Lista de presença · '+m[4]+'/'+m[3]+'/'+m[2];
   $('#nome').value=localStorage.getItem('presenca-nome')||'';
-  const prev=localStorage.getItem('presenca-'+sala);if(prev)msg('ok','Presença já registrada como <b>'+prev+'</b>. Pode corrigir se precisar.');
+  const prev=localStorage.getItem('presenca-'+sala);if(prev){msg('ok','Presença já registrada como <b>'+prev+'</b>. Pode corrigir se precisar.');setTimeout(mostraAv,0)}
   const a=await aberta();if(a===false)msg('erro','A chamada ainda não foi aberta (ou já foi encerrada) pelo professor.');
   Votos.token().catch(()=>{});
 })();
@@ -50,11 +66,26 @@ $('#f').onsubmit=async e=>{
   try{
     const t=await Votos.token();
     const r=await fetch(`${FB.db}/presenca/${sala}/${t.uid}.json?auth=${t.id}`,{method:'PUT',body:JSON.stringify({nome,t:{'.sv':'timestamp'}})});
-    if(r.ok){localStorage.setItem('presenca-'+sala,nome);localStorage.setItem('presenca-nome',nome);
+    if(r.ok){localStorage.setItem('presenca-'+sala,nome);localStorage.setItem('presenca-nome',nome);mostraAv();
       msg('ok','✓ Presença registrada: <b>'+nome.replace(/</g,'&lt;')+'</b> às '+new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})+'.');}
     else{const a=await aberta();msg('erro',a===false?'A chamada não está aberta no momento.':'Não consegui registrar. Tente de novo.');}
   }catch(err){msg('erro','Sem conexão. Tente de novo.');}
   $('#b').disabled=false;
+};
+
+const PERG=[['clareza','A aula foi clara e bem organizada'],['relevancia','O conteúdo é útil para a minha prática'],['interatividade','Os casos e a votação ajudaram a aprender'],['geral','Avaliação geral da aula']];
+const av={};
+document.getElementById('perguntas').innerHTML=PERG.map(([k,t])=>`<p class="q">${t}</p><div class="esc" data-k="${k}">${[1,2,3,4,5].map(n=>`<button type="button" data-n="${n}">${n}</button>`).join('')}</div><div class="esc-leg"><span>${k==='geral'?'ruim':'discordo'}</span><span>${k==='geral'?'excelente':'concordo'}</span></div>`).join('');
+document.querySelectorAll('.esc button').forEach(b=>b.onclick=()=>{const k=b.parentNode.dataset.k;av[k]=+b.dataset.n;b.parentNode.querySelectorAll('button').forEach(x=>x.classList.toggle('sel',x===b))});
+function mostraAv(){if(localStorage.getItem('aval-'+sala)){$('#av').classList.add('show');$('#av').innerHTML='<h2>Avalie a aula</h2><p id="avst">✓ Avaliação enviada. Obrigado!</p>';return}$('#av').classList.add('show')}
+$('#enviarAv').onclick=async()=>{
+  const corpo=Object.assign({},av);['ajudou','melhorar'].forEach(k=>{const v=$('#'+k).value.trim();if(v)corpo[k]=v.slice(0,600)});
+  if(Object.keys(corpo).length===0){$('#avst').textContent='Marque pelo menos uma nota.';return}
+  corpo.t={'.sv':'timestamp'};$('#enviarAv').disabled=true;$('#avst').textContent='Enviando…';
+  try{const t=await Votos.token();const r=await fetch(`${FB.db}/avaliacao/${sala}/${t.uid}.json?auth=${t.id}`,{method:'PUT',body:JSON.stringify(corpo)});
+    if(r.ok){localStorage.setItem('aval-'+sala,'1');$('#avst').textContent='✓ Avaliação enviada. Obrigado!';$('#enviarAv').style.display='none'}
+    else{$('#avst').textContent='Não consegui enviar (a chamada pode ter sido encerrada).';$('#enviarAv').disabled=false}}
+  catch(e){$('#avst').textContent='Sem conexão. Tente de novo.';$('#enviarAv').disabled=false}
 };
 </script>
 </body></html>

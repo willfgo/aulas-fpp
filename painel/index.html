@@ -53,7 +53,7 @@ footer img{height:28px}
 <header><div class="wrap">
   <div class="top"><img src="../assets/img/fpp-logo-branco.png" alt="Faculdades Pequeno Príncipe"><span class="onde" id="onde"></span></div>
   <h1>Painel de <span>aulas</span></h1>
-  <div class="ctl"><input id="busca" type="search" placeholder="Buscar aula, tema ou turma…" autocomplete="off"><span id="chips" style="display:contents"></span></div>
+  <div class="ctl"><a class="chip" href="${SITE_PLACEHOLDER}" id="lkAn" style="text-decoration:none">Análise de itens</a><input id="busca" type="search" placeholder="Buscar aula, tema ou turma…" autocomplete="off"><span id="chips" style="display:contents"></span></div>
 </div></header>
 <main id="lista"></main>
 <footer><span id="rodape"></span><img src="../assets/img/fpp-logo-azul.png" alt="FPP"></footer>
@@ -2362,6 +2362,7 @@ const $=s=>document.querySelector(s);
 const MES=['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'],SEM=['dom','seg','ter','qua','qui','sex','sáb'];
 const hoje=new Date();hoje.setHours(0,0,0,0);
 let filtro='Todas';
+document.getElementById('lkAn').href=SITE+'analise/';
 $('#onde').textContent=LOCAL?'Versão do Mac · abre também os arquivos offline':'Versão web';
 $('#rodape').innerHTML=LOCAL?`Versão online: <a href="${SITE}painel/" style="color:inherit">${SITE.replace('https://','')}painel/</a>`:'Abra no computador da sala e clique em “Apresentar”.';
 function qrSvg(t){const q=qrcode(0,'M');q.addData(t);q.make();const n=q.getModuleCount();let d='';

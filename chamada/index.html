@@ -26,6 +26,10 @@ tr.dup td{background:#fff7c2}
 #qr .tx{font-size:clamp(28px,3.4vw,48px);font-weight:800;text-transform:uppercase;line-height:1.1;max-width:520px}
 #qr .tx b{color:var(--amar)}#qr .tx small{display:block;font-size:20px;font-weight:500;text-transform:none;color:#dce9f5;margin-top:18px;word-break:break-all}
 #qr .cont{display:block;margin-top:34px;font-size:40px;color:var(--amar)}
+.avg{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:10px}
+.avg div{border-top:4px solid var(--azul);padding-top:8px}.avg b{display:block;font-size:34px;color:var(--azul)}.avg span{font-size:13px;color:var(--cinza)}
+.coment{margin-top:16px}.coment li{margin:6px 0;font-size:15px}
+@media(max-width:600px){.avg{grid-template-columns:1fr 1fr}}
 </style>
 </head><body>
 <header class="fpp"><div class="wrap">
@@ -51,6 +55,8 @@ tr.dup td{background:#fff7c2}
     </div>
     <table><thead><tr><th>#</th><th>Nome</th><th>Horário</th></tr></thead><tbody id="lista"></tbody></table>
     <p class="src" id="obs" style="margin-top:12px">Linhas em amarelo: nome repetido (mesmo nome enviado de dois celulares).</p>
+    <h2 style="margin-top:34px">Avaliação da aula <span id="avN" style="font-weight:500;letter-spacing:0;text-transform:none"></span></h2>
+    <div id="avRes"></div>
   </div>
 </main>
 <footer class="fpp"><span><a href="../painel/">← painel de aulas</a></span><img src="../assets/img/fpp-logo-azul.png" alt="FPP"></footer>
@@ -78,9 +84,19 @@ function troca(){
   refs.forEach(r=>r.off());refs=[];dados={};
   sala=Votos.limpa($('#aula').value+'-'+$('#data').value);
   history.replaceState(null,'','?a='+$('#aula').value+'&d='+$('#data').value);
-  const rc=db.ref('chamada/'+sala),rp=db.ref('presenca/'+sala);refs=[rc,rp];
+  const rc=db.ref('chamada/'+sala),rp=db.ref('presenca/'+sala),ra=db.ref('avaliacao/'+sala);refs=[rc,rp,ra];
+  ra.on('value',s=>desenhaAv(s.val()||{}));
   rc.on('value',s=>{aberta=!!(s.val()&&s.val().aberta);$('#pill').textContent=aberta?'aberta':'fechada';$('#pill').classList.toggle('on',aberta);$('#abrir').textContent=aberta?'Encerrar chamada':'Abrir chamada';$('#abrir').classList.toggle('am',aberta)});
   rp.on('value',s=>{dados=s.val()||{};desenha()},err=>{$('#s').textContent='Sem permissão de leitura: '+err.code});
+}
+function desenhaAv(d){
+  const L=Object.values(d),P=[['clareza','Clareza'],['relevancia','Relevância'],['interatividade','Interatividade'],['geral','Geral']];
+  $('#avN').textContent='· '+L.length+' resposta(s)';
+  if(!L.length){$('#avRes').innerHTML='<p class="src">Nenhuma avaliação ainda. Os alunos avaliam logo depois de registrar a presença.</p>';return}
+  const med=k=>{const v=L.map(x=>x[k]).filter(Number.isFinite);return v.length?(v.reduce((a,b)=>a+b,0)/v.length).toFixed(1).replace('.',',')+'<span> / 5 · n='+v.length+'</span>':'—'};
+  const lst=k=>L.map(x=>x[k]).filter(Boolean).map(t=>`<li>${t.replace(/</g,'&lt;')}</li>`).join('')||'<li class="src">—</li>';
+  $('#avRes').innerHTML=`<div class="avg">${P.map(([k,t])=>`<div><span>${t}</span><b>${med(k)}</b></div>`).join('')}</div>
+    <div class="coment"><b>O que mais ajudou</b><ul>${lst('ajudou')}</ul><b>O que melhorar</b><ul>${lst('melhorar')}</ul></div>`;
 }
 function linhas(){return Object.values(dados).filter(v=>v&&v.nome).sort((a,b)=>a.nome.localeCompare(b.nome,'pt'))}
 function desenha(){

@@ -22,7 +22,16 @@
   <p>10 casos de pronto-socorro. Responda, veja a explicação e siga.</p>
 </div></header>
 <main>
-  <div id="jogo">
+  <div id="inicio">
+    <h2>Antes de começar</h2>
+    <p>Seu período (opcional):</p>
+    <select id="periodo" style="font:inherit;font-size:18px;padding:10px;border:2px solid var(--azul);background:#fff;min-width:220px">
+      <option value="">prefiro não informar</option><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option><option>6</option><option>7</option><option selected>8</option><option>9</option><option>10</option><option>11</option><option>12</option><option value="outro">outro curso / formado</option>
+    </select>
+    <p class="src" style="margin-top:14px">Suas respostas são anônimas. A primeira resposta de cada questão é usada, sem identificação, para avaliar a qualidade das questões.</p>
+    <div class="nav"><button class="btn" id="comecar">Começar o quiz</button></div>
+  </div>
+  <div id="jogo" style="display:none">
     <div id="prog"><i></i></div><div id="cont"></div>
     <div id="q"></div>
     <p id="perg" style="font-weight:800;color:var(--azul);margin:14px 0 4px"></p>
@@ -40,21 +49,24 @@
   <p class="src" style="margin-top:30px">Casos fictícios. Troponina: hs-cTnT (Elecsys), referência — percentil 99 — até 14 ng/L; cortes do algoritmo 0/1 h da ESC 2023 para esse ensaio. Cada ensaio tem cortes próprios.</p>
 </main>
 <footer class="fpp"><span><a href="./">← página da aula</a></span><img src="../assets/img/fpp-logo-azul.png" alt="FPP"></footer>
+<script src="../assets/firebase.js"></script>
+<script src="../assets/qrcode.js"></script>
+<script src="../assets/votos.js"></script>
 <script src="../assets/glossario.js"></script>
 <script src="quiz-dados.js"></script>
 <script>
 const Q=QUIZ;
-let i=0,pts=0;const $=s=>document.querySelector(s);
+const FORM='risco-sca-quiz';let i=0,pts=0;const $=s=>document.querySelector(s);
 function mostra(){const it=Q[i];$('#cont').textContent=`Questão ${i+1} de ${Q.length}`;$('#prog i').style.width=(i/Q.length*100)+'%';
   $('#q').innerHTML=it.q;$('#perg').innerHTML=it.p||'';$('#leg').innerHTML=legendaHTML(it.q+' '+(it.p||'')+' '+it.o.join(' ')+' '+it.e);$('#fb').classList.remove('show');$('#prox').style.display='none';$('#ops').innerHTML='';
   it.o.forEach((o,k)=>{const b=document.createElement('button');b.className='opt';b.innerHTML=`<span class="lt">${'ABCD'[k]}</span><span>${o}</span>`;
-    b.onclick=()=>{if($('#ops').dataset.ok)return;$('#ops').dataset.ok=1;if(k===it.c)pts++;
+    b.onclick=()=>{if($('#ops').dataset.ok)return;$('#ops').dataset.ok=1;if(k===it.c)pts++;Votos.registrar(FORM,it.id,'ABCDE'[k]);
       [...$('#ops').children].forEach((x,j)=>{if(j===it.c)x.classList.add('ok');else if(j===k)x.classList.add('err')});
       $('#fb').innerHTML=(k===it.c?'<b>Correto.</b> ':'<b>Não.</b> ')+it.e;$('#fb').classList.add('show');
       $('#prox').textContent=i<Q.length-1?'Próxima →':'Ver resultado';$('#prox').style.display='inline-flex'};
     $('#ops').appendChild(b)});delete $('#ops').dataset.ok;}
 $('#prox').onclick=()=>{i++;if(i<Q.length){mostra();scrollTo(0,0)}else{$('#jogo').style.display='none';$('#fim').style.display='block';
   $('#placar').textContent=pts+'/'+Q.length;$('#msg').textContent=pts>=8?'Muito bem — pronto para o plantão.':pts>=5?'Bom caminho. Revise o algoritmo 0/1 h e o HEART.':'Vale rever a aula e o resumo em PDF.';}};
-mostra();
+$('#comecar').onclick=()=>{Votos.contexto(FORM,{modo:'quiz',periodo:$('#periodo').value});$('#inicio').style.display='none';$('#jogo').style.display='block';mostra();scrollTo(0,0)};
 </script>
 </body></html>
