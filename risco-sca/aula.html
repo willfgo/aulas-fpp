@@ -196,6 +196,24 @@ html,body{touch-action:manipulation}
   #girar{display:flex;position:fixed;left:0;right:0;top:max(10px,env(safe-area-inset-top));justify-content:center;z-index:20;pointer-events:none}
   #girar span{background:var(--amar);color:var(--azul);font:700 14px Montserrat,sans-serif;padding:8px 14px}
 }
+
+/* ARC-HBR */
+.hbr{display:grid;grid-template-columns:1fr 470px;gap:36px}
+.hbr .cab{display:flex;justify-content:space-between;align-items:center;padding:10px 16px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;font-size:18px}
+.hbr .cab b{font-size:30px;color:inherit;min-width:40px;text-align:right}
+.hbr .maior .cab{background:var(--azul-esc);color:#fff}
+.hbr .menor .cab{background:var(--amar);color:var(--azul)}
+.hbr .maior .itens{display:grid;grid-template-columns:1fr 1fr;column-gap:20px}
+.hbr .it{font:inherit;font-size:16.5px;line-height:1.25;text-align:left;background:#fff;border:0;border-bottom:1px solid var(--linha);padding:9px 4px;display:flex;gap:10px;align-items:center;cursor:pointer;color:var(--tinta);min-height:52px}
+.hbr .it:before{content:"";flex:none;width:20px;height:20px;border:2px solid var(--azul)}
+.hbr .it.sel{background:#fff7c2;font-weight:700}
+.hbr .it.sel:before{background:var(--azul);box-shadow:inset 0 0 0 3px #fff7c2}
+.hbr-regra{display:flex;align-items:center;gap:24px;margin-top:18px}
+.hbr-regra .regra{flex:1;font-size:21px}
+.hbr-regra .regra span{display:block;font-size:15px;color:var(--cinza)}
+.hbr-regra .veredito{width:420px;padding:14px 18px;font-weight:800;font-size:20px;text-transform:uppercase;letter-spacing:.03em;background:var(--azul-cl);color:var(--azul-esc);text-align:center;transition:background .3s}
+.hbr-regra .veredito.alto{background:var(--azul-esc);color:#fff}
+.hbr-regra .veredito.alto:after{content:"";display:block;height:4px;background:var(--amar);margin-top:8px}
 </style>
 </head>
 <body>
@@ -404,12 +422,34 @@ html,body{touch-action:manipulation}
     <div>
       <p data-step="1">Sangramento maior na SCA aumenta mortalidade tanto quanto um novo IAM.</p>
       <p data-step="1"><b>CRUSADE</b>: Ht, ClCr, FC, sexo, IC, doença vascular, DM, PAS.</p>
-      <p data-step="3"><b>ARC-HBR</b> (alto risco de sangramento): idade ≥ 75, anticoagulação oral, DRC grave, anemia, plaquetopenia, sangramento prévio, AVC, câncer ativo, cirurgia recente…</p>
+      <p data-step="3"><b>ARC-HBR</b>: define quem é <b>alto risco de sangramento</b> por critérios clínicos simples — próximo slide.</p>
       <p data-step="4">Na prática: <b>acesso radial</b>, dose ajustada à função renal e escolha do antiplaquetário/duração da DAPT.</p>
     </div>
     <div><svg id="crusadechart" width="640" height="440"></svg><p class="small" style="margin:0">Sangramento maior intra-hospitalar por faixa de CRUSADE</p></div>
   </div>
   <div class="src">Subherwal S et al. Circulation 2009;119:1873-82 · Urban P et al. Circulation 2019;140:240-61 (ARC-HBR).</div>
+</section>
+
+<!-- 13b ARC-HBR -->
+<section class="slide" id="arc-hbr">
+  <div class="kicker">Pergunta 4 · … e de sangrar</div>
+  <h2><span class="hl">ARC-HBR</span> — alto risco de sangramento <span class="small">— clique nos critérios</span></h2>
+  <div class="hbr">
+    <div class="col maior" data-step="1">
+      <div class="cab"><span>Critérios maiores</span><b id="hbrMa">0</b></div>
+      <div class="itens" id="hbrMaior"></div>
+    </div>
+    <div class="col menor" data-step="2">
+      <div class="cab"><span>Critérios menores</span><b id="hbrMe">0</b></div>
+      <div class="itens" id="hbrMenor"></div>
+    </div>
+  </div>
+  <div class="hbr-regra" data-step="3">
+    <div class="regra"><b>≥ 1 maior</b> ou <b>≥ 2 menores</b> = alto risco de sangramento <span>(BARC 3 ou 5 ≥ 4% em 1 ano, ou hemorragia intracraniana ≥ 1%)</span></div>
+    <div class="veredito" id="hbrV">Marque os critérios do paciente</div>
+    <button class="btn-reset" id="hbrReset">limpar</button>
+  </div>
+  <div class="src">Urban P et al. Defining high bleeding risk in patients undergoing PCI: a consensus document from the Academic Research Consortium for High Bleeding Risk. Circulation 2019;140:240-61 · Eur Heart J 2019;40:2632-53. Diagrama redesenhado a partir da figura central.</div>
 </section>
 
 <!-- 14 CASO 2 -->
@@ -740,9 +780,25 @@ function timiUpd(){
   tChart.hl(s<=1?0:s>=6?5:s-1);
 }
 
+
+/* ---------- ARC-HBR ---------- */
+const HBR_MAIOR=['Anticoagulação oral prevista a longo prazo','DRC grave ou dialítica (TFG &lt; 30)','Hemoglobina &lt; 11 g/dL','Sangramento espontâneo com internação ou transfusão nos últimos 6 meses (ou recorrente)','Plaquetas &lt; 100 mil/mm³','Diátese hemorrágica crônica','Cirrose com hipertensão portal','Câncer ativo nos últimos 12 meses','AVC hemorrágico prévio, HIC traumática &lt; 12 meses ou MAV cerebral','AVC isquêmico moderado/grave &lt; 6 meses','Cirurgia maior inadiável durante a DAPT','Cirurgia ou trauma maior &lt; 30 dias antes da ICP'];
+const HBR_MENOR=['Idade ≥ 75 anos','DRC moderada (TFG 30–59)','Hemoglobina 11–12,9 (homem) ou 11–11,9 g/dL (mulher)','Sangramento espontâneo nos últimos 12 meses (sem critério maior)','Uso crônico de AINE ou corticoide oral','AVC isquêmico prévio (sem critério maior)'];
+function hbrInit(){
+  const mk=(lista,box)=>lista.forEach(t=>{const b=document.createElement('button');b.className='it';b.innerHTML=t;b.onclick=e=>{e.stopPropagation();b.classList.toggle('sel');hbrUpd()};$(box).appendChild(b)});
+  mk(HBR_MAIOR,'#hbrMaior');mk(HBR_MENOR,'#hbrMenor');
+  $('#hbrReset').onclick=e=>{e.stopPropagation();$$('#arc-hbr .it.sel').forEach(b=>b.classList.remove('sel'));hbrUpd()};
+  hbrUpd();
+}
+function hbrUpd(){
+  const ma=$$('#hbrMaior .sel').length,me=$$('#hbrMenor .sel').length,alto=ma>=1||me>=2,v=$('#hbrV');
+  $('#hbrMa').textContent=ma;$('#hbrMe').textContent=me;
+  v.classList.toggle('alto',alto);
+  v.textContent=!ma&&!me?'Marque os critérios do paciente':alto?'Alto risco de sangramento':'Sem critério de alto risco';
+}
 /* ---------- montagem ---------- */
 function build(){
-  tropo();heartInit();timiInit();
+  tropo();heartInit();timiInit();hbrInit();
   barChart('#killipchart',{max:90,unit:'%',series:[{color:'#005CA0'}],cats:[
     {label:'I',values:[6],colors:['#9fc0dc']},{label:'II',values:[17],colors:['#FFDD09']},{label:'III',values:[38],colors:['#005CA0']},{label:'IV',values:[81],colors:['#034578']}],step:2});
   barChart('#crusadechart',{max:22,unit:'%',series:[{color:'#005CA0'}],step:2,cats:[
@@ -875,7 +931,7 @@ addEventListener('keydown',e=>{
 });
 addEventListener('click',e=>{
   if(window._swipe&&Date.now()-window._swipe<400)return;
-  if(e.target.closest('button,a,input,.calc,.chips,#help,#toque'))return;
+  if(e.target.closest('button,a,input,.calc,.chips,.hbr,#help,#toque'))return;
   if(e.target.closest('#qrbig')){$('#qrbig').classList.remove('show');return}
   if(e.clientX<innerWidth*0.15)prev();else next();
 });

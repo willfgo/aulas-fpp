@@ -12,7 +12,7 @@
 .o b{display:inline-block;min-width:16px;color:var(--azul)}
 .o.sel{background:#fff7c2;border-color:var(--amar)}
 .res{margin:14px 0 4px;font-size:18px}
-.res strong{font-size:34px;color:var(--azul);font-weight:800;margin-right:8px}
+.res strong{font-size:26px;color:var(--azul);font-weight:800;margin-right:8px}
 .chk{display:flex;gap:12px;align-items:center;width:100%;font:inherit;font-size:16px;text-align:left;background:#fff;border:0;border-bottom:1px solid var(--linha);padding:11px 2px;cursor:pointer;color:var(--tinta)}
 .chk:before{content:"";flex:none;width:22px;height:22px;border:2px solid var(--azul)}
 .chk.sel:before{background:var(--azul);box-shadow:inset 0 0 0 3px #fff}
@@ -43,6 +43,12 @@
 <div class="escala" id="tE"><span>0–1 · 4,7%</span><span>2 · 8,3%</span><span>3 · 13,2%</span><span>4 · 19,9%</span><span>5 · 26,2%</span><span>6–7 · 40,9%</span></div>
 <p class="src">Morte, IAM ou revascularização urgente em 14 dias.</p>
 
+<h2>ARC-HBR · alto risco de sangramento</h2>
+<p class="src">≥ 1 critério maior ou ≥ 2 menores = alto risco (BARC 3/5 ≥ 4% em 1 ano). Urban 2019.</p>
+<p style="font-weight:800;color:var(--azul);margin:10px 0 0">Maiores</p><div id="hbrMa"></div>
+<p style="font-weight:800;color:var(--azul);margin:16px 0 0">Menores</p><div id="hbrMe"></div>
+<div class="res"><strong id="hbrT">—</strong><span id="hbrC"></span></div>
+
 <h2>GRACE e outras calculadoras</h2>
 <div class="lista">
   <a href="https://www.mdcalc.com/calc/1099/grace-acs-risk-mortality-calculator" target="_blank" rel="noopener"><span class="ic">G</span><span><span class="t">GRACE (MDCalc)</span><br><span class="d">&gt; 140 = alto risco → invasiva &lt; 24 h</span></span></a>
@@ -69,6 +75,12 @@ T.forEach(t=>{const b=document.createElement('button');b.className='chk';b.textC
 function tU(){const s=document.querySelectorAll('#timi .sel').length;$('#tT').textContent=s;$('#tC').textContent=s<=2?'baixo':s<=4?'intermediário':'alto';
   const k=s<=1?0:s>=6?5:s-1;[...$('#tE').children].forEach((e,i)=>e.classList.toggle('on',i===k))}
 tU();
+const HMA=['Anticoagulação oral prevista a longo prazo','DRC grave ou dialítica (TFG < 30)','Hemoglobina < 11 g/dL','Sangramento espontâneo com internação/transfusão < 6 meses (ou recorrente)','Plaquetas < 100 mil/mm³','Diátese hemorrágica crônica','Cirrose com hipertensão portal','Câncer ativo nos últimos 12 meses','AVC hemorrágico prévio, HIC traumática < 12 meses ou MAV cerebral','AVC isquêmico moderado/grave < 6 meses','Cirurgia maior inadiável durante a DAPT','Cirurgia ou trauma maior < 30 dias antes da ICP'];
+const HME=['Idade ≥ 75 anos','DRC moderada (TFG 30–59)','Hb 11–12,9 (homem) ou 11–11,9 g/dL (mulher)','Sangramento espontâneo < 12 meses (sem critério maior)','Uso crônico de AINE ou corticoide oral','AVC isquêmico prévio (sem critério maior)'];
+[[HMA,'#hbrMa'],[HME,'#hbrMe']].forEach(([l,b])=>l.forEach(t=>{const x=document.createElement('button');x.className='chk';x.textContent=t;x.onclick=()=>{x.classList.toggle('sel');hbrU()};$(b).appendChild(x)}));
+function hbrU(){const ma=document.querySelectorAll('#hbrMa .sel').length,me=document.querySelectorAll('#hbrMe .sel').length;
+  $('#hbrT').textContent=ma+' maior'+(ma===1?'':'es')+' · '+me+' menor'+(me===1?'':'es');$('#hbrC').innerHTML=ma>=1||me>=2?' <span class="hl">alto risco de sangramento</span>':' sem critério de alto risco'}
+hbrU();
 for(const id in CASOS){const C=CASOS[id],d=document.createElement('div');
   d.innerHTML=`<h3 style="margin-top:26px">${C.titulo}</h3><div class="caso">${C.texto}</div><p style="font-weight:800;color:var(--azul);margin:14px 0 2px">${C.pergunta}</p><div class="ops"></div><div class="box reveal">${C.explica}</div>`;
   const ops=d.querySelector('.ops'),rv=d.querySelector('.reveal');
