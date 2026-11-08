@@ -198,17 +198,23 @@ html,body{touch-action:manipulation}
 }
 
 /* ARC-HBR */
-.hbr{display:grid;grid-template-columns:1fr 470px;gap:36px}
-.hbr .cab{display:flex;justify-content:space-between;align-items:center;padding:10px 16px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;font-size:18px}
+.hbr{display:grid;grid-template-columns:1fr 440px;gap:30px}
+.hbr .cab{display:flex;justify-content:space-between;align-items:center;padding:6px 14px;font-weight:800;text-transform:uppercase;letter-spacing:.06em;font-size:18px}
 .hbr .cab b{font-size:30px;color:inherit;min-width:40px;text-align:right}
 .hbr .maior .cab{background:var(--azul-esc);color:#fff}
 .hbr .menor .cab{background:var(--amar);color:var(--azul)}
-.hbr .maior .itens{display:grid;grid-template-columns:1fr 1fr;column-gap:20px}
-.hbr .it{font:inherit;font-size:16.5px;line-height:1.25;text-align:left;background:#fff;border:0;border-bottom:1px solid var(--linha);padding:9px 4px;display:flex;gap:10px;align-items:center;cursor:pointer;color:var(--tinta);min-height:52px}
-.hbr .it:before{content:"";flex:none;width:20px;height:20px;border:2px solid var(--azul)}
-.hbr .it.sel{background:#fff7c2;font-weight:700}
-.hbr .it.sel:before{background:var(--azul);box-shadow:inset 0 0 0 3px #fff7c2}
-.hbr-regra{display:flex;align-items:center;gap:24px;margin-top:18px}
+.hbr .itens{display:grid;gap:8px;margin-top:8px}
+.hbr .maior .itens{grid-template-columns:repeat(4,1fr)}
+.hbr .menor .itens{grid-template-columns:repeat(2,1fr)}
+.hbr .it{font:inherit;font-size:14.5px;line-height:1.2;text-align:center;background:#fff;border:2px solid var(--linha);padding:10px 8px 8px;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:5px;cursor:pointer;color:var(--tinta);height:136px;position:relative;transition:background .25s,border-color .25s,opacity .5s,transform .5s}
+.hbr .it .ic{width:52px;height:52px;flex:none;color:var(--azul)}
+.hbr .it .ic svg{width:100%;height:100%;display:block}
+.hbr .menor .it .ic{color:#8a6d00}
+.hbr .it.sel{background:#fff7c2;border-color:var(--amar);font-weight:700}
+.hbr .it.sel .ic{color:var(--azul-esc)}
+.hbr .it.sel:after{content:"✓";position:absolute;top:4px;right:7px;font-weight:800;color:var(--azul-esc);font-size:18px}
+.hbr .col:not(.on) .it{opacity:0;transform:scale(.92)}
+.hbr-regra{display:flex;align-items:center;gap:24px;margin-top:12px}
 .hbr-regra .regra{flex:1;font-size:21px}
 .hbr-regra .regra span{display:block;font-size:15px;color:var(--cinza)}
 .hbr-regra .veredito{width:420px;padding:14px 18px;font-weight:800;font-size:20px;text-transform:uppercase;letter-spacing:.03em;background:var(--azul-cl);color:var(--azul-esc);text-align:center;transition:background .3s}
@@ -455,7 +461,7 @@ html,body{touch-action:manipulation}
     <div class="veredito" id="hbrV">Marque os critérios do paciente</div>
     <button class="btn-reset" id="hbrReset">limpar</button>
   </div>
-  <div class="src">Urban P et al. Defining high bleeding risk in patients undergoing PCI: a consensus document from the Academic Research Consortium for High Bleeding Risk. Circulation 2019;140:240-61 · Eur Heart J 2019;40:2632-53. Diagrama redesenhado a partir da figura central.</div>
+  <div class="src">Urban P et al. Defining high bleeding risk in patients undergoing PCI: a consensus document from the Academic Research Consortium for High Bleeding Risk. Circulation 2019;140:240-61 · Eur Heart J 2019;40:2632-53. Diagrama redesenhado a partir da figura central · ícones Healthicons (CC0).</div>
 </section>
 
 <!-- 14 CASO 2 -->
@@ -667,10 +673,11 @@ html,body{touch-action:manipulation}
 <footer><div id="bar"></div></footer>
 </div>
 
-<script src="../assets/firebase.js?v=202611081047"></script>
-<script src="../assets/qrcode.js?v=202611081047"></script>
-<script src="../assets/votos.js?v=202611081047"></script>
-<script src="../assets/glossario.js?v=202611081047"></script>
+<script src="../assets/firebase.js?v=202611081203"></script>
+<script src="../assets/qrcode.js?v=202611081203"></script>
+<script src="../assets/votos.js?v=202611081203"></script>
+<script src="../assets/icones.js?v=202611081203"></script>
+<script src="../assets/glossario.js?v=202611081203"></script>
 <div id="toque"><button id="tPrev" aria-label="Voltar">‹</button><span class="meio"><button id="tQR" aria-label="QR da votação">QR</button><button id="tCh" aria-label="QR da chamada">✓</button><button id="tFS" aria-label="Tela cheia">⤢</button></span><button id="tNext" aria-label="Avançar">›</button></div>
 <div id="girar"><span>Gire o celular para a horizontal ⟳</span></div>
 <script>
@@ -789,10 +796,10 @@ function timiUpd(){
 
 
 /* ---------- ARC-HBR ---------- */
-const HBR_MAIOR=['Anticoagulação oral prevista a longo prazo','DRC grave ou dialítica (TFG &lt; 30)','Hemoglobina &lt; 11 g/dL','Sangramento espontâneo com internação ou transfusão nos últimos 6 meses (ou recorrente)','Plaquetas &lt; 100 mil/mm³','Diátese hemorrágica crônica','Cirrose com hipertensão portal','Câncer ativo nos últimos 12 meses','AVC hemorrágico prévio, HIC traumática &lt; 12 meses ou MAV cerebral','AVC isquêmico moderado/grave &lt; 6 meses','Cirurgia maior inadiável durante a DAPT','Cirurgia ou trauma maior &lt; 30 dias antes da ICP'];
-const HBR_MENOR=['Idade ≥ 75 anos','DRC moderada (TFG 30–59)','Hemoglobina 11–12,9 (homem) ou 11–11,9 g/dL (mulher)','Sangramento espontâneo nos últimos 12 meses (sem critério maior)','Uso crônico de AINE ou corticoide oral','AVC isquêmico prévio (sem critério maior)'];
+const HBR_MAIOR=[['anticoag','Anticoagulação oral de longo prazo'],['dialise','DRC grave ou diálise (TFG &lt; 30)'],['hb','Hemoglobina &lt; 11 g/dL'],['sangramento','Sangramento com internação ou transfusão &lt; 6 meses (ou recorrente)'],['plaquetas','Plaquetas &lt; 100 mil/mm³'],['diatese','Diátese hemorrágica crônica'],['cirrose','Cirrose com hipertensão portal'],['cancer','Câncer ativo nos últimos 12 meses'],['avch','AVC hemorrágico, HIC traumática &lt; 12 meses ou MAV cerebral'],['avci','AVC isquêmico moderado/grave &lt; 6 meses'],['cirurgia','Cirurgia maior inadiável durante a DAPT'],['trauma','Cirurgia ou trauma maior &lt; 30 dias antes da ICP']];
+const HBR_MENOR=[['idoso','Idade ≥ 75 anos'],['rim','DRC moderada (TFG 30–59)'],['hb','Hb 11–12,9 (homem) ou 11–11,9 g/dL (mulher)'],['sangramento','Sangramento com internação ou transfusão &lt; 12 meses'],['aine','Uso crônico de AINE ou corticoide oral'],['avci','AVC isquêmico prévio (sem critério maior)']];
 function hbrInit(){
-  const mk=(lista,box)=>lista.forEach(t=>{const b=document.createElement('button');b.className='it';b.innerHTML=t;b.onclick=e=>{e.stopPropagation();b.classList.toggle('sel');hbrUpd()};$(box).appendChild(b)});
+  const mk=(lista,box)=>lista.forEach(([ic,t],i)=>{const b=document.createElement('button');b.className='it';b.style.transitionDelay=(i*0.06)+'s';b.innerHTML=`<span class="ic">${ICONES[ic]||''}</span><span class="tx">${t}</span>`;b.onclick=e=>{e.stopPropagation();b.classList.toggle('sel');hbrUpd()};$(box).appendChild(b)});
   mk(HBR_MAIOR,'#hbrMaior');mk(HBR_MENOR,'#hbrMenor');
   $('#hbrReset').onclick=e=>{e.stopPropagation();$$('#arc-hbr .it.sel').forEach(b=>b.classList.remove('sel'));hbrUpd()};
   hbrUpd();
