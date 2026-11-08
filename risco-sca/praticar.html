@@ -2,7 +2,7 @@
 <html lang="pt-BR"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Praticar · Risco na dor torácica · FPP</title>
-<link rel="stylesheet" href="../assets/fpp.css?v=202611081203">
+<link rel="stylesheet" href="../assets/fpp.css?v=202611081206">
 <meta name="theme-color" content="#005CA0">
 <style>
 .calc{display:grid;gap:4px}
@@ -21,6 +21,11 @@
 .escala span.on{background:var(--amar);color:var(--azul)}
 .reveal{display:none}.reveal.show{display:block}
 @media(max-width:560px){.linha{grid-template-columns:1fr 1fr 1fr}.linha .l{grid-column:1/-1}}
+.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:6px;margin-top:6px}
+.tile{font:inherit;font-size:13px;line-height:1.2;background:#fff;border:2px solid var(--linha);padding:8px 6px;display:flex;flex-direction:column;align-items:center;gap:4px;text-align:center;cursor:pointer;color:var(--tinta);min-height:112px}
+.tile .ic{width:44px;height:44px;color:var(--azul)}.tile .ic svg{width:100%;height:100%}
+.tiles.me .tile .ic{color:#8a6d00}
+.tile.sel{background:#fff7c2;border-color:var(--amar);font-weight:700}
 </style>
 </head><body>
 <header class="fpp"><div class="wrap">
@@ -45,8 +50,8 @@
 
 <h2>ARC-HBR · alto risco de sangramento</h2>
 <p class="src">≥ 1 critério maior ou ≥ 2 menores = alto risco (BARC 3/5 ≥ 4% em 1 ano). Urban 2019.</p>
-<p style="font-weight:800;color:var(--azul);margin:10px 0 0">Maiores</p><div id="hbrMa"></div>
-<p style="font-weight:800;color:var(--azul);margin:16px 0 0">Menores</p><div id="hbrMe"></div>
+<p style="font-weight:800;color:var(--azul);margin:10px 0 0">Maiores</p><div id="hbrMa" class="tiles"></div>
+<p style="font-weight:800;color:#8a6d00;margin:16px 0 0">Menores</p><div id="hbrMe" class="tiles me"></div>
 <div class="res"><strong id="hbrT">—</strong><span id="hbrC"></span></div>
 
 <h2>GRACE e outras calculadoras</h2>
@@ -60,8 +65,9 @@
 <div id="casos"></div>
 </main>
 <footer class="fpp"><span><a href="./">← página da aula</a></span><img src="../assets/img/fpp-logo-azul.png" alt="FPP"></footer>
-<script src="../assets/glossario.js?v=202611081203"></script>
-<script src="casos.js?v=202611081203"></script>
+<script src="../assets/icones.js?v=202611081206"></script>
+<script src="../assets/glossario.js?v=202611081206"></script>
+<script src="casos.js?v=202611081206"></script>
 <script>
 const $=s=>document.querySelector(s);
 const H=[['História',['Pouco suspeita','Moderadamente suspeita','Altamente suspeita']],['ECG',['Normal','Repolarização inespecífica (BRE, HVE, MP)','Desvio de ST significativo']],['Idade',['< 45','45–64','≥ 65']],['Risco',['Nenhum fator','1–2 fatores','≥ 3 ou aterosclerose conhecida']],['Troponina',['≤ referência (hs-cTnT ≤ 14 ng/L)','1–3× (15–42 ng/L)','> 3× (> 42 ng/L)']]];
@@ -76,9 +82,9 @@ T.forEach(t=>{const b=document.createElement('button');b.className='chk';b.textC
 function tU(){const s=document.querySelectorAll('#timi .sel').length;$('#tT').textContent=s;$('#tC').textContent=s<=2?'baixo':s<=4?'intermediário':'alto';
   const k=s<=1?0:s>=6?5:s-1;[...$('#tE').children].forEach((e,i)=>e.classList.toggle('on',i===k))}
 tU();
-const HMA=['Anticoagulação oral prevista a longo prazo','DRC grave ou dialítica (TFG < 30)','Hemoglobina < 11 g/dL','Sangramento espontâneo com internação/transfusão < 6 meses (ou recorrente)','Plaquetas < 100 mil/mm³','Diátese hemorrágica crônica','Cirrose com hipertensão portal','Câncer ativo nos últimos 12 meses','AVC hemorrágico prévio, HIC traumática < 12 meses ou MAV cerebral','AVC isquêmico moderado/grave < 6 meses','Cirurgia maior inadiável durante a DAPT','Cirurgia ou trauma maior < 30 dias antes da ICP'];
-const HME=['Idade ≥ 75 anos','DRC moderada (TFG 30–59)','Hb 11–12,9 (homem) ou 11–11,9 g/dL (mulher)','Sangramento espontâneo < 12 meses (sem critério maior)','Uso crônico de AINE ou corticoide oral','AVC isquêmico prévio (sem critério maior)'];
-[[HMA,'#hbrMa'],[HME,'#hbrMe']].forEach(([l,b])=>l.forEach(t=>{const x=document.createElement('button');x.className='chk';x.textContent=t;x.onclick=()=>{x.classList.toggle('sel');hbrU()};$(b).appendChild(x)}));
+const HMA=[['anticoag','Anticoagulação oral de longo prazo'],['dialise','DRC grave ou diálise (TFG < 30)'],['hb','Hemoglobina < 11 g/dL'],['sangramento','Sangramento com internação/transfusão < 6 meses (ou recorrente)'],['plaquetas','Plaquetas < 100 mil/mm³'],['diatese','Diátese hemorrágica crônica'],['cirrose','Cirrose com hipertensão portal'],['cancer','Câncer ativo nos últimos 12 meses'],['avch','AVC hemorrágico, HIC traumática < 12 meses ou MAV'],['avci','AVC isquêmico moderado/grave < 6 meses'],['cirurgia','Cirurgia maior inadiável durante a DAPT'],['trauma','Cirurgia ou trauma maior < 30 dias antes da ICP']];
+const HME=[['idoso','Idade ≥ 75 anos'],['rim','DRC moderada (TFG 30–59)'],['hb','Hb 11–12,9 (homem) ou 11–11,9 g/dL (mulher)'],['sangramento','Sangramento com internação/transfusão < 12 meses'],['aine','Uso crônico de AINE ou corticoide oral'],['avci','AVC isquêmico prévio (sem critério maior)']];
+[[HMA,'#hbrMa'],[HME,'#hbrMe']].forEach(([l,b])=>l.forEach(([ic,t])=>{const x=document.createElement('button');x.className='tile';x.innerHTML=`<span class="ic">${ICONES[ic]}</span><span>${t}</span>`;x.onclick=()=>{x.classList.toggle('sel');hbrU()};$(b).appendChild(x)}));
 function hbrU(){const ma=document.querySelectorAll('#hbrMa .sel').length,me=document.querySelectorAll('#hbrMe .sel').length;
   $('#hbrT').textContent=ma+' maior'+(ma===1?'':'es')+' · '+me+' menor'+(me===1?'':'es');$('#hbrC').innerHTML=ma>=1||me>=2?' <span class="hl">alto risco de sangramento</span>':' sem critério de alto risco'}
 hbrU();
