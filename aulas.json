@@ -1,0 +1,53 @@
+{
+  "_comentario": "Catálogo das aulas do Prof. Wilton (FPP). Para incluir uma aula nova, acrescente um item e rode `python3 painel/montar_painel.py` na pasta do site. Campos: id, titulo, turma, uc, formato (interativa|pptx), proxima (AAAA-MM-DD ou vazio), web (pasta no site, vazio se não publicada), ao_vivo (true se tem votação), local (caminho do arquivo no Mac, relativo a ~/Desktop/Claude/aulas-fpp), nota.",
+  "aulas": [
+    {
+      "id": "risco-sca",
+      "titulo": "Estratificação de risco da dor torácica na emergência",
+      "turma": "8º período",
+      "uc": "Atividade Acadêmica · UC 24 Emergência",
+      "formato": "interativa",
+      "proxima": "2026-11-09",
+      "web": "risco-sca/",
+      "ao_vivo": true,
+      "local": "aa/8p/temas/risco-sca/2026-2-html/risco-sca-2026-2.html",
+      "nota": "Votação por QR nos casos 1, 2 e 3 · Q = QR grande · V = mostra votos"
+    },
+    {
+      "id": "ecg2",
+      "titulo": "ECG 2 — variações do normal e alterações básicas",
+      "turma": "2º período",
+      "uc": "HMC 2 · Habilidades",
+      "formato": "interativa",
+      "proxima": "",
+      "web": "",
+      "ao_vivo": false,
+      "local": "hmc2/temas/ecg/ecg2-interativa/ECG2 - aula interativa (arquivo unico).html",
+      "nota": "Só no Mac (ainda não publicada)"
+    },
+    {
+      "id": "ecg1",
+      "titulo": "ECG 1 — fundamentos interativos",
+      "turma": "2º período",
+      "uc": "HMC 2 · Habilidades",
+      "formato": "interativa",
+      "proxima": "",
+      "web": "",
+      "ao_vivo": false,
+      "local": "hmc2/temas/ecg/ecg2-interativa/ECG1 - fundamentos interativos (arquivo unico).html",
+      "nota": "Só no Mac (ainda não publicada)"
+    },
+    {
+      "id": "dislipidemia",
+      "titulo": "Dislipidemia e prevenção da aterosclerose",
+      "turma": "8º período",
+      "uc": "Atividade Acadêmica",
+      "formato": "pptx",
+      "proxima": "",
+      "web": "",
+      "ao_vivo": false,
+      "local": "aa/8p/temas/dislipidemia/versoes/dislipidemia-2026-2.pptx",
+      "nota": "PowerPoint (versão 2026-2)"
+    }
+  ]
+}
