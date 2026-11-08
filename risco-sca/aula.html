@@ -661,7 +661,7 @@ html,body{touch-action:manipulation}
 <div id="help"><div>
 <b>→ / espaço / PageDown</b> avança (passo a passo) · <b>← / PageUp</b> volta<br>
 <b>clique</b> na área livre do slide avança · <b>F</b> tela cheia · <b>Home/End</b> início/fim<br>
-<b>Q</b> QR grande da votação · <b>V</b> mostra/esconde votos · <b>H</b> ajuda · pontinhos vermelhos (canto) = passos restantes
+<b>Q</b> QR grande da votação · <b>C</b> QR da chamada · <b>V</b> mostra/esconde votos · <b>H</b> ajuda · pontinhos vermelhos (canto) = passos restantes
 </div></div>
 <div id="qrbig"></div><div id="dots"></div><div id="num"></div>
 <footer><div id="bar"></div></footer>
@@ -671,7 +671,7 @@ html,body{touch-action:manipulation}
 <script src="../assets/qrcode.js"></script>
 <script src="../assets/votos.js"></script>
 <script src="../assets/glossario.js"></script>
-<div id="toque"><button id="tPrev" aria-label="Voltar">‹</button><span class="meio"><button id="tQR" aria-label="QR da votação">QR</button><button id="tFS" aria-label="Tela cheia">⤢</button></span><button id="tNext" aria-label="Avançar">›</button></div>
+<div id="toque"><button id="tPrev" aria-label="Voltar">‹</button><span class="meio"><button id="tQR" aria-label="QR da votação">QR</button><button id="tCh" aria-label="QR da chamada">✓</button><button id="tFS" aria-label="Tela cheia">⤢</button></span><button id="tNext" aria-label="Avançar">›</button></div>
 <div id="girar"><span>Gire o celular para a horizontal ⟳</span></div>
 <script>
 const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
@@ -857,7 +857,8 @@ function chrome(){
 /* ---------- votação ao vivo ---------- */
 const PRM=new URLSearchParams(location.search);
 const AO_VIVO=PRM.has('ao-vivo');
-const SALA=Votos.limpa(PRM.get('sala')||('sca-'+new Date().toISOString().slice(0,10)));
+const SALA=Votos.limpa(PRM.get('sala')||('sca-'+hojeLocal()));
+const SALA_CHAMADA='risco-sca-'+hojeLocal();
 const URL_AULA=SITE+'risco-sca/', URL_VOTO=c=>URL_AULA+'votar.html?s='+SALA+'&c='+c;
 const MAPA=[{c:'c1',qr:true},{c:'c1',qr:false},{c:'c2',qr:true},{c:'c3',qr:true}];
 function aoVivo(){
@@ -876,6 +877,12 @@ function aoVivo(){
     $$('.qrbox').forEach(q=>{const n=(res[q.dataset.caso]||{}).total||0;$('.n',q).textContent=n+(n===1?' voto':' votos')});
     if($('#qrbig').classList.contains('show')){const n=(res[$('#qrbig').dataset.caso]||{}).total||0;const e=$('#qrbig .n');if(e)e.textContent=n+(n===1?' voto':' votos')}
   },ok=>$$('.qrbox .n').forEach(e=>e.classList.toggle('off',!ok)));
+}
+function chamadaQR(){const b=$('#qrbig');
+  if(b.classList.contains('show')&&b.dataset.caso==='chamada'){b.classList.remove('show');return}
+  const u=SITE+'chamada/presenca.html?s='+SALA_CHAMADA;b.dataset.caso='chamada';
+  b.innerHTML=Votos.qrSvg(u)+`<div class="tx">Chamada<br><b>Escaneie</b> e digite seu nome<small>${u.replace('https://','')}</small><small style="margin-top:26px;font-size:18px">A lista abre só depois que o professor abrir a chamada (painel → Chamada).</small></div>`;
+  b.classList.add('show');
 }
 function qrGrande(c){const b=$('#qrbig');
   if(b.classList.contains('show')){b.classList.remove('show');return}
@@ -920,6 +927,7 @@ addEventListener('resize',fit);
   $('#tNext').addEventListener('click',e=>{pare(e);next()});
   $('#tPrev').addEventListener('click',e=>{pare(e);prev()});
   $('#tQR').addEventListener('click',e=>{pare(e);qrGrande()});
+  $('#tCh').addEventListener('click',e=>{pare(e);chamadaQR()});
   $('#tFS').addEventListener('click',e=>{pare(e);const d=document.documentElement;
     if(document.fullscreenElement||document.webkitFullscreenElement){(document.exitFullscreen||document.webkitExitFullscreen).call(document)}
     else if(d.requestFullscreen)d.requestFullscreen();else if(d.webkitRequestFullscreen)d.webkitRequestFullscreen();
@@ -938,6 +946,7 @@ addEventListener('keydown',e=>{
   else if(e.key==='f'||e.key==='F'){document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen()}
   else if(e.key==='h'||e.key==='H'||e.key==='?')$('#help').classList.toggle('show');
   else if(e.key==='q'||e.key==='Q')qrGrande();
+  else if(e.key==='c'||e.key==='C')chamadaQR();
   else if(e.key==='v'||e.key==='V')document.body.classList.toggle('ver-votos');
   else if(e.key==='Escape')$('#qrbig').classList.remove('show');
 });

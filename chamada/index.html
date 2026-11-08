@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="pt-BR"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Chamada · Prof. Wilton · FPP</title>
+<link rel="stylesheet" href="../assets/fpp.css">
+<meta name="theme-color" content="#005CA0">
+<style>
+main{max-width:980px}
+.barra{display:flex;flex-wrap:wrap;gap:10px;align-items:end;margin-top:18px}
+.barra label{display:flex;flex-direction:column;font-size:12px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--azul);gap:4px}
+.barra select,.barra input{font:inherit;font-size:16px;padding:10px;border:2px solid var(--azul);background:#fff;border-radius:0}
+.estado{display:flex;align-items:center;gap:18px;margin:22px 0 6px;flex-wrap:wrap}
+.estado .n{font-size:64px;font-weight:800;color:var(--azul);line-height:1}
+.estado .s{font-size:15px;color:var(--cinza)}
+.pill{font-size:13px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:5px 10px;background:#f0f2f5;color:var(--cinza)}
+.pill.on{background:var(--amar);color:var(--azul)}
+table{width:100%;border-collapse:collapse;margin-top:10px;font-size:16px}
+td,th{padding:9px 6px;border-bottom:1px solid var(--linha);text-align:left}
+th{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--azul)}
+td.h{color:var(--cinza);width:90px}td.i{width:44px;color:var(--cinza)}
+tr.dup td{background:#fff7c2}
+#login,#negado{display:none}
+#qr{position:fixed;inset:0;background:var(--azul);display:none;align-items:center;justify-content:center;gap:60px;color:#fff;padding:30px;z-index:5;flex-wrap:wrap;cursor:pointer}
+#qr.show{display:flex}#qr svg{width:min(78vh,80vw);height:min(78vh,80vw)}
+#qr .tx{font-size:clamp(28px,3.4vw,48px);font-weight:800;text-transform:uppercase;line-height:1.1;max-width:520px}
+#qr .tx b{color:var(--amar)}#qr .tx small{display:block;font-size:20px;font-weight:500;text-transform:none;color:#dce9f5;margin-top:18px;word-break:break-all}
+#qr .cont{display:block;margin-top:34px;font-size:40px;color:var(--amar)}
+</style>
+</head><body>
+<header class="fpp"><div class="wrap">
+  <img src="../assets/img/fpp-logo-branco.png" alt="Faculdades Pequeno Príncipe">
+  <p class="k">Professor</p>
+  <h1>Lista de <span class="hl">presença</span></h1>
+</div></header>
+<main>
+  <div id="login"><p>Entre com a sua conta Google (willfgo@gmail.com) para abrir a chamada e ver a lista.</p><button class="btn" id="entrar">Entrar com Google</button></div>
+  <div id="negado" class="aviso">Esta lista só abre para a conta do professor. <button class="btn lin" id="sair1" style="margin-left:10px">Trocar de conta</button></div>
+  <div id="app" style="display:none">
+    <div class="barra">
+      <label>Aula<select id="aula"></select></label>
+      <label>Data<input type="date" id="data"></label>
+      <button class="btn" id="abrir">Abrir chamada</button>
+      <button class="btn am" id="qrbtn">QR em tela cheia</button>
+    </div>
+    <div class="estado"><span class="n" id="n">0</span><span><span class="pill" id="pill">fechada</span><br><span class="s" id="s"></span></span></div>
+    <div class="barra" style="margin-top:6px">
+      <button class="btn lin" id="csv">Baixar lista (CSV)</button>
+      <button class="btn lin" id="copiar">Copiar nomes</button>
+      <span class="src" id="quem"></span> <button class="btn-reset" id="sair" style="font:inherit;font-size:13px;background:none;border:1px solid var(--linha);padding:4px 10px;cursor:pointer;color:var(--cinza)">sair</button>
+    </div>
+    <table><thead><tr><th>#</th><th>Nome</th><th>Horário</th></tr></thead><tbody id="lista"></tbody></table>
+    <p class="src" id="obs" style="margin-top:12px">Linhas em amarelo: nome repetido (mesmo nome enviado de dois celulares).</p>
+  </div>
+</main>
+<footer class="fpp"><span><a href="../painel/">← painel de aulas</a></span><img src="../assets/img/fpp-logo-azul.png" alt="FPP"></footer>
+<div id="qr" title="Clique para fechar"></div>
+<script src="../assets/firebase.js"></script>
+<script src="../assets/qrcode.js"></script>
+<script src="../assets/votos.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script>
+const $=s=>document.querySelector(s), PROF='willfgo@gmail.com';
+firebase.initializeApp(FB_CONFIG);const auth=firebase.auth(),db=firebase.database();
+const P=new URLSearchParams(location.search);
+let sala='',refs=[],dados={},aberta=false;
+const norm=s=>s.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().replace(/\s+/g,' ').trim();
+const urlPresenca=()=>SITE+'chamada/presenca.html?s='+sala;
+async function carregaAulas(){
+  let aulas=[];try{aulas=(await (await fetch('../aulas.json')).json()).aulas}catch(e){}
+  $('#aula').innerHTML=aulas.map(a=>`<option value="${a.id}">${a.titulo} · ${a.turma}</option>`).join('')+'<option value="outra">Outra atividade</option>';
+  if(P.get('a'))$('#aula').value=P.get('a');
+  $('#data').value=P.get('d')||hojeLocal();
+}
+function troca(){
+  refs.forEach(r=>r.off());refs=[];dados={};
+  sala=Votos.limpa($('#aula').value+'-'+$('#data').value);
+  history.replaceState(null,'','?a='+$('#aula').value+'&d='+$('#data').value);
+  const rc=db.ref('chamada/'+sala),rp=db.ref('presenca/'+sala);refs=[rc,rp];
+  rc.on('value',s=>{aberta=!!(s.val()&&s.val().aberta);$('#pill').textContent=aberta?'aberta':'fechada';$('#pill').classList.toggle('on',aberta);$('#abrir').textContent=aberta?'Encerrar chamada':'Abrir chamada';$('#abrir').classList.toggle('am',aberta)});
+  rp.on('value',s=>{dados=s.val()||{};desenha()},err=>{$('#s').textContent='Sem permissão de leitura: '+err.code});
+}
+function linhas(){return Object.values(dados).filter(v=>v&&v.nome).sort((a,b)=>a.nome.localeCompare(b.nome,'pt'))}
+function desenha(){
+  const L=linhas(),cont={};L.forEach(v=>{const k=norm(v.nome);cont[k]=(cont[k]||0)+1});
+  const unicos=Object.keys(cont).length;
+  $('#n').textContent=unicos;$('#s').textContent=L.length===unicos?`${L.length} registro(s)`:`${L.length} registros · ${L.length-unicos} repetido(s)`;
+  $('#lista').innerHTML=L.map((v,i)=>`<tr class="${cont[norm(v.nome)]>1?'dup':''}"><td class="i">${i+1}</td><td>${v.nome.replace(/</g,'&lt;')}</td><td class="h">${new Date(v.t).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}</td></tr>`).join('');
+  const c=$('#qr .cont');if(c)c.textContent=unicos+(unicos===1?' presente':' presentes');
+}
+function unicosOrdenados(){const vis={},out=[];linhas().forEach(v=>{const k=norm(v.nome);if(!vis[k]){vis[k]=1;out.push(v)}});return out}
+$('#abrir').onclick=async()=>{try{await db.ref('chamada/'+sala).set({aberta:!aberta,quando:firebase.database.ServerValue.TIMESTAMP})}catch(e){alert('Não consegui alterar a chamada: '+e.message)}};
+$('#aula').onchange=troca;$('#data').onchange=troca;
+$('#qrbtn').onclick=()=>{$('#qr').innerHTML=Votos.qrSvg(urlPresenca())+`<div class="tx">Chamada<br><b>Escaneie</b> e digite seu nome<small>${urlPresenca().replace('https://','')}</small><span class="cont"></span></div>`;$('#qr').classList.add('show');desenha()};
+$('#qr').onclick=()=>$('#qr').classList.remove('show');
+addEventListener('keydown',e=>{if(e.key==='Escape')$('#qr').classList.remove('show')});
+$('#csv').onclick=()=>{const L=unicosOrdenados();const csv='\ufeffNº;Nome;Horário\n'+L.map((v,i)=>`${i+1};"${v.nome.replace(/"/g,'""')}";${new Date(v.t).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}`).join('\n');
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));a.download=`presenca-${sala}.csv`;a.click()};
+$('#copiar').onclick=async()=>{const t=unicosOrdenados().map((v,i)=>`${i+1}. ${v.nome}`).join('\n');try{await navigator.clipboard.writeText(t);$('#copiar').textContent='Copiado ✓';setTimeout(()=>$('#copiar').textContent='Copiar nomes',1500)}catch(e){prompt('Copie:',t)}};
+const entrar=()=>{const p=new firebase.auth.GoogleAuthProvider();p.setCustomParameters({login_hint:PROF,prompt:'select_account'});auth.signInWithPopup(p).catch(e=>alert('Login não concluído: '+e.message))};
+$('#entrar').onclick=entrar;$('#sair').onclick=()=>auth.signOut();$('#sair1').onclick=()=>auth.signOut().then(entrar);
+auth.onAuthStateChanged(async u=>{
+  $('#login').style.display=u?'none':'block';
+  const ok=u&&u.email===PROF;$('#negado').style.display=u&&!ok?'block':'none';$('#app').style.display=ok?'block':'none';
+  if(ok){$('#quem').textContent=u.email;await carregaAulas();troca()}
+});
+</script>
+</body></html>

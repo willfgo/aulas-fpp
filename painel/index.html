@@ -2380,6 +2380,7 @@ function acoes(a){const b=[];const w=a.web?SITE+a.web:'';
   if(LOCAL&&a.local_url)b.push(`<a class="btn ${w?'':'pri'}" href="${a.local_url}">${a.formato==='pptx'?'Abrir PowerPoint':(w?'Offline (sem internet)':'▶ Apresentar (arquivo do Mac)')}</a>`);
   else if(!w&&a.local)b.push(`<span class="btn" aria-disabled="true">Arquivo no Mac · abra o painel do Desktop</span>`);
   if(w)b.push(`<div class="lin"><a class="btn" href="${w}" target="_blank">Página dos alunos</a><button class="btn" data-qr="${w}" data-t="${a.titulo.replace(/"/g,'&quot;')}">QR</button></div>`);
+  b.push(`<a class="btn" href="${SITE}chamada/?a=${a.id}" target="_blank">✓ Chamada</a>`);
   return b.join('')}
 function render(){
   const q=$('#busca').value.trim().toLowerCase();
