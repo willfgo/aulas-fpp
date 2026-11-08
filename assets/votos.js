@@ -7,9 +7,16 @@
   let _tok = null, _pend = null;
   function token() {
     if (_tok && _tok.exp > Date.now() + 60000) return Promise.resolve(_tok);
-    if (!_pend) _pend = _token().then(t => (_tok = t)).finally(() => { _pend = null; });
+    if (!_pend) _pend = _token().catch(() => local()).then(t => (_tok = t)).finally(() => { _pend = null; });
     return _pend;
   }
+  // Plano B: sem conta anônima (cota do Firebase por IP esgotada), usa um id local estável neste aparelho.
+  function local() {
+    let id = localStorage.getItem('fb-local');
+    if (!id) { const a = new Uint8Array(15); crypto.getRandomValues(a); id = 'x' + [...a].map(n => 'abcdefghijklmnopqrstuvwxyz0123456789'[n % 36]).join(''); localStorage.setItem('fb-local', id); }
+    return { uid: id, id: null, exp: Date.now() + 10 * 60000 };
+  }
+  const q = t => (t.id ? '?auth=' + t.id : '');
   async function _token() {
     let t = null;
     try { t = JSON.parse(localStorage.getItem('fb-anon') || 'null'); } catch (e) {}
@@ -37,7 +44,7 @@
 
   async function votar(sala, caso, letra) {
     const t = await token();
-    const r = await fetch(`${FB.db}/votos/${limpa(sala)}/${limpa(caso)}/${t.uid}.json?auth=${t.id}`, {
+    const r = await fetch(`${FB.db}/votos/${limpa(sala)}/${limpa(caso)}/${t.uid}.json${q(t)}`, {
       method: 'PUT', body: JSON.stringify(letra)
     });
     if (!r.ok) throw new Error('voto ' + r.status);
@@ -87,15 +94,15 @@
     if (!item) return;
     try {
       const t = await token();
-      await fetch(`${FB.db}/respostas/${limpa(form)}/${t.uid}/${item}.json?auth=${t.id}`, { method: 'PUT', body: JSON.stringify({ r: letra, t: { '.sv': 'timestamp' } }) });
+      await fetch(`${FB.db}/respostas/${limpa(form)}/${t.uid}/${item}.json${q(t)}`, { method: 'PUT', body: JSON.stringify({ r: letra, t: { '.sv': 'timestamp' } }) });
     } catch (e) {}
   }
   async function contexto(form, ctx) {
     try {
       const t = await token();
-      await fetch(`${FB.db}/respostas/${limpa(form)}/${t.uid}/_ctx.json?auth=${t.id}`, { method: 'PUT', body: JSON.stringify(Object.assign({}, ctx, { t: { '.sv': 'timestamp' } })) });
+      await fetch(`${FB.db}/respostas/${limpa(form)}/${t.uid}/_ctx.json${q(t)}`, { method: 'PUT', body: JSON.stringify(Object.assign({}, ctx, { t: { '.sv': 'timestamp' } })) });
     } catch (e) {}
   }
 
-  window.Votos = { votar, ouvir, token, qrSvg, limpa, registrar, contexto, pendentes };
+  window.Votos = { votar, ouvir, token, qrSvg, limpa, registrar, contexto, pendentes, authq: q };
 })();
