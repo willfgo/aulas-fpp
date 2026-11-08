@@ -226,6 +226,7 @@ html,body{touch-action:manipulation}
 .rod .leg{font-size:12.5px;line-height:1.35;color:var(--azul-esc)}
 .rod .leg b{color:var(--azul-esc)}
 .ref{font-size:.82em;color:var(--cinza);font-weight:500;white-space:nowrap}
+#preto{position:absolute;inset:0;background:#000;z-index:30;display:none}#preto.show{display:block}
 </style>
 </head>
 <body>
@@ -667,17 +668,17 @@ html,body{touch-action:manipulation}
 <div id="help"><div>
 <b>→ / espaço / PageDown</b> avança (passo a passo) · <b>← / PageUp</b> volta<br>
 <b>clique</b> na área livre do slide avança · <b>F</b> tela cheia · <b>Home/End</b> início/fim<br>
-<b>Q</b> QR grande da votação · <b>C</b> QR da chamada · <b>V</b> mostra/esconde votos · <b>H</b> ajuda · pontinhos vermelhos (canto) = passos restantes
+<b>B</b> ou <b>.</b> tela preta · <b>Q</b> QR grande da votação · <b>C</b> QR da chamada · <b>V</b> mostra/esconde votos · <b>H</b> ajuda · pontinhos vermelhos (canto) = passos restantes
 </div></div>
-<div id="qrbig"></div><div id="dots"></div><div id="num"></div>
+<div id="qrbig"></div><div id="preto"></div><div id="dots"></div><div id="num"></div>
 <footer><div id="bar"></div></footer>
 </div>
 
-<script src="../assets/firebase.js?v=202611081206"></script>
-<script src="../assets/qrcode.js?v=202611081206"></script>
-<script src="../assets/votos.js?v=202611081206"></script>
-<script src="../assets/icones.js?v=202611081206"></script>
-<script src="../assets/glossario.js?v=202611081206"></script>
+<script src="../assets/firebase.js?v=202611081945"></script>
+<script src="../assets/qrcode.js?v=202611081945"></script>
+<script src="../assets/votos.js?v=202611081945"></script>
+<script src="../assets/icones.js?v=202611081945"></script>
+<script src="../assets/glossario.js?v=202611081945"></script>
 <div id="toque"><button id="tPrev" aria-label="Voltar">‹</button><span class="meio"><button id="tQR" aria-label="QR da votação">QR</button><button id="tCh" aria-label="QR da chamada">✓</button><button id="tFS" aria-label="Tela cheia">⤢</button></span><button id="tNext" aria-label="Avançar">›</button></div>
 <div id="girar"><span>Gire o celular para a horizontal ⟳</span></div>
 <script>
@@ -947,6 +948,11 @@ addEventListener('resize',fit);
 })();
 
 addEventListener('keydown',e=>{
+  // passadores (Logitech R400/R500/Spotlight etc.): F5/Shift+F5 = "iniciar apresentação" → tela cheia em vez de recarregar;
+  // "." ou B = tela preta (botão de apagar tela)
+  if(e.key==='F5'){e.preventDefault();if(!document.fullscreenElement)document.documentElement.requestFullscreen().catch(()=>{});return}
+  if(e.key==='.'||e.key==='b'||e.key==='B'){$('#preto').classList.toggle('show');return}
+  if($('#preto').classList.contains('show')){e.preventDefault();$('#preto').classList.remove('show');return}
   if(['ArrowRight',' ','PageDown','ArrowDown','Enter'].includes(e.key)){e.preventDefault();next()}
   else if(['ArrowLeft','PageUp','ArrowUp','Backspace'].includes(e.key)){e.preventDefault();prev()}
   else if(e.key==='Home')go(0);else if(e.key==='End')go(slides.length-1);
@@ -960,6 +966,7 @@ addEventListener('keydown',e=>{
 addEventListener('click',e=>{
   if(window._swipe&&Date.now()-window._swipe<400)return;
   if(e.target.closest('button,a,input,.calc,.chips,.hbr,#help,#toque'))return;
+  if(e.target.closest('#preto')){$('#preto').classList.remove('show');return}
   if(e.target.closest('#qrbig')){$('#qrbig').classList.remove('show');return}
   if(e.clientX<innerWidth*0.15)prev();else next();
 });
