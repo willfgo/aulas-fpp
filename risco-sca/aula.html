@@ -1,0 +1,841 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Estratificação de risco da dor torácica na emergência · Prof. Wilton Gomes · FPP</title>
+<meta property="og:title" content="Estratificação de risco da dor torácica na emergência">
+<meta name="theme-color" content="#005CA0">
+<style>
+@font-face{font-family:Montserrat;font-weight:400;src:url(../assets/fonts/montserrat-400.woff2) format("woff2")}
+@font-face{font-family:Montserrat;font-weight:500;src:url(../assets/fonts/montserrat-500.woff2) format("woff2")}
+@font-face{font-family:Montserrat;font-weight:700;src:url(../assets/fonts/montserrat-700.woff2) format("woff2")}
+@font-face{font-family:Montserrat;font-weight:800;src:url(../assets/fonts/montserrat-800.woff2) format("woff2")}
+@font-face{font-family:Montserrat;font-weight:900;src:url(../assets/fonts/montserrat-900.woff2) format("woff2")}
+/* Identidade FPP: azul #005CA0, azul escuro #034578, amarelo #FFDD09, Montserrat (fpp.edu.br) */
+:root{--azul:#005CA0;--azul-esc:#034578;--amar:#FFDD09;--azul-cl:#e6f0f8;--azul-md:#9fc0dc;--tinta:#1a1a1a;--cinza:#6b7280;--linha:#d9e1ea;
+ --navy:var(--azul);--navy2:var(--azul);--red:var(--azul-esc);--green:var(--azul);--amber:var(--tinta);--ink:var(--tinta);--mute:var(--cinza);--line:var(--linha)}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;background:#0d1b2a;overflow:hidden;font-family:Montserrat,"Helvetica Neue",Arial,sans-serif;color:var(--tinta)}
+#stage{position:absolute;left:50%;top:50%;width:1600px;height:900px;background:#fff;transform-origin:50% 50%;overflow:hidden}
+.slide{position:absolute;inset:0;padding:54px 80px 100px;display:none}
+.slide.active{display:block}
+.topo{position:absolute;left:0;right:0;top:0;height:10px;background:var(--azul)}
+.kicker{font-size:17px;letter-spacing:.16em;text-transform:uppercase;color:var(--azul);font-weight:700;margin-bottom:8px}
+h1{font-size:76px;line-height:1.05;margin:0;font-weight:800;text-transform:uppercase;letter-spacing:-.01em}
+h2{font-size:42px;margin:0 0 30px;color:var(--azul);line-height:1.12;font-weight:800;text-transform:uppercase;letter-spacing:-.005em}
+h2 .small{text-transform:none;letter-spacing:0;font-weight:500}
+.hl{background:var(--amar);color:var(--azul);padding:0 .16em;box-decoration-break:clone;-webkit-box-decoration-break:clone}
+p,li{font-size:25px;line-height:1.4}
+small,.small{font-size:18px;color:var(--cinza)}
+b{color:var(--azul);font-weight:700}
+.red{color:var(--azul-esc)}.green{color:var(--azul)}.amber{color:var(--tinta)}
+.rod{position:absolute;left:80px;right:80px;bottom:24px;height:52px;border-top:1px solid var(--linha);display:flex;justify-content:space-between;align-items:center;gap:30px}
+.rod img{height:32px;flex:none}
+.src{font-size:14px;color:var(--cinza);line-height:1.35}
+footer{position:absolute;left:0;right:0;bottom:0;height:5px;background:var(--azul-cl)}
+#bar{height:100%;width:0;background:var(--azul);transition:width .3s}
+#num{position:absolute;right:16px;bottom:8px;font-size:13px;color:var(--cinza);z-index:5}
+#dots{position:absolute;right:16px;top:20px;display:flex;gap:5px;z-index:5}
+#dots i{width:7px;height:7px;background:var(--linha)}
+#dots i.on{background:var(--amar)}
+/* passos */
+.slide [data-step]{transition:opacity .5s ease,transform .6s ease}
+.slide [data-step]:not(.on){opacity:0;transform:translateY(14px)}
+.slide svg [data-step]:not(.on){transform:none}
+.slide .grow{transform-box:fill-box;transform-origin:50% 100%;transition:transform 1s cubic-bezier(.2,.8,.2,1)!important}
+.slide .grow:not(.on){opacity:1!important;transform:scaleY(0)!important}
+.slide .growx{transform-box:fill-box;transform-origin:0 50%;transition:transform 1s cubic-bezier(.2,.8,.2,1)!important}
+.slide .growx:not(.on){opacity:1!important;transform:scaleX(0)!important}
+.slide .draw{stroke-dasharray:1;stroke-dashoffset:1;transition:stroke-dashoffset 1.3s ease!important}
+.slide .draw:not(.on){opacity:1!important}
+.slide .draw.on{stroke-dashoffset:0}
+@media (prefers-reduced-motion:reduce){.slide *{transition-duration:.01s!important}}
+/* blocos de texto (sem cartões) */
+.grid{display:grid;gap:40px}
+.card{padding:18px 0 0;border-top:4px solid var(--azul)}
+.card h3{margin:0 0 10px;font-size:22px;color:var(--azul);text-transform:uppercase;letter-spacing:.04em;font-weight:800;line-height:1.25}
+.card p{margin:0;font-size:22px;line-height:1.45}
+.card.g{border-top-color:var(--azul-md)}.card.a{border-top-color:var(--amar)}.card.r{border-top-color:var(--azul-esc)}.card.n{border-top-color:var(--azul)}
+.tag{display:inline-block;font-size:13px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;padding:2px 8px;background:var(--amar);color:var(--azul);margin-left:6px;vertical-align:middle}
+.big{font-size:34px}
+.lista{display:grid;gap:0;max-width:1400px}
+.lista .it{display:flex;gap:28px;align-items:center;padding:16px 0;border-bottom:1px solid var(--linha)}
+.lista .it .nn{flex:none;width:58px;height:58px;background:var(--azul);color:#fff;font-weight:800;font-size:28px;display:flex;align-items:center;justify-content:center}
+.lista .it:nth-child(odd) .nn{background:var(--amar);color:var(--azul)}
+.lista .it p{margin:0;font-size:25px}
+.lista .it .q{flex:1;font-weight:700;color:var(--azul)}
+.lista .it .a{width:560px;color:var(--tinta)}
+/* gráficos */
+svg text{font-family:Montserrat,Arial,sans-serif}
+.axis{stroke:#9aa7b4;stroke-width:2}
+.val{font-size:24px;font-weight:800;fill:var(--tinta)}
+.cat{font-size:20px;fill:var(--tinta);font-weight:700}
+.catsub{font-size:16px;fill:var(--cinza)}
+.bar{transition:fill .3s,stroke .3s}
+.bar.hl{fill:var(--amar)!important;stroke:var(--azul);stroke-width:3}
+/* fluxograma */
+.flow{position:relative}
+.flow svg.flowsvg{position:absolute;inset:0;overflow:visible;pointer-events:none}
+.edge{fill:none;stroke-width:2.5}
+.node{position:absolute;display:flex;align-items:center;justify-content:center;text-align:center;font-size:21px;line-height:1.28;border-radius:3px;padding:8px 14px;background:#fff;border:2px solid var(--azul);color:var(--tinta)}
+.node small{display:block;font-size:17px;font-weight:500;text-transform:none;letter-spacing:0;margin-top:3px}
+.node.navy{background:var(--azul);color:#fff;font-weight:700}
+.node.navy b{color:#fff}
+.node.lnavy,.node.lgreen,.node.lamber,.node.lred{background:#fff}
+.node.lnavy{background:var(--azul-cl)}
+.node.green,.node.amber,.node.red{font-weight:700}
+#flow01 .node.green,#flow01 .node.amber,#flow01 .node.red{font-weight:800;text-transform:uppercase;letter-spacing:.03em}
+.node.green{background:var(--azul-cl)}
+.node.amber{background:var(--amar);border-color:var(--amar)}
+.node.red{background:var(--azul-esc);border-color:var(--azul-esc);color:#fff}
+.node.red b{color:#fff}
+.node.green b,.node.amber b{color:var(--azul)}
+/* calculadoras */
+.calc{display:grid;grid-template-columns:200px 1fr 1fr 1fr;gap:6px 8px;align-items:stretch}
+.calc .lab{font-size:16px;font-weight:800;color:var(--azul);display:flex;align-items:center;text-transform:uppercase;letter-spacing:.07em}
+.opt,.chip{font:inherit;font-size:18px;line-height:1.2;border:0;border-bottom:1px solid var(--linha);background:#fff;border-radius:0;padding:10px 8px;cursor:pointer;color:var(--tinta);text-align:left;display:flex;align-items:center;gap:8px}
+.opt .pt{flex:none;display:inline-flex;width:26px;height:26px;border-radius:50%;background:var(--azul-cl);color:var(--azul);font-weight:800;font-size:15px;align-items:center;justify-content:center}
+.opt.sel,.chip.sel{background:#fff7c2}
+.opt.sel .pt{background:var(--azul);color:#fff}
+.total{font-size:28px;margin-top:20px}
+.total b{font-size:46px;font-weight:800}
+.chips{display:grid;grid-template-columns:1fr 1fr;gap:4px 24px}
+.chip{font-size:21px;padding:12px 6px}
+.chip:before{content:"";flex:none;width:22px;height:22px;border:2px solid var(--azul)}
+.chip.sel:before{background:var(--azul);box-shadow:inset 0 0 0 3px #fff7c2}
+.btn-reset{font:inherit;font-size:14px;background:none;border:1px solid var(--linha);padding:4px 10px;cursor:pointer;color:var(--cinza);margin-left:14px;vertical-align:middle}
+/* casos */
+.caso{font-size:25px;line-height:1.55}
+.caso b{color:var(--azul)}
+.caso .fict{font-size:13px;color:var(--cinza);text-transform:uppercase;letter-spacing:.14em;font-weight:700;margin-bottom:8px}
+.opts{display:grid;gap:0}
+.opts .vote{font:inherit;font-size:23px;line-height:1.3;text-align:left;background:#fff;border:0;border-bottom:1px solid var(--linha);padding:14px 0;cursor:pointer;color:var(--tinta);display:flex;gap:18px;align-items:center}
+.opts .vote .lt{flex:none;width:50px;height:50px;border:2px solid var(--azul);color:var(--azul);font-weight:800;font-size:23px;display:flex;align-items:center;justify-content:center;transition:background .3s}
+.opts .vote.chosen .lt{background:var(--azul);color:#fff}
+.opts.on .vote[data-correct] .lt{background:var(--amar);border-color:var(--amar);color:var(--azul)}
+.opts.on .vote[data-correct]{font-weight:700}
+.opts.on .vote.chosen:not([data-correct]){color:var(--cinza);text-decoration:line-through}
+.opts.on .vote.chosen:not([data-correct]) .lt{background:#fff;color:var(--cinza);border-color:var(--cinza)}
+.answer{background:var(--azul-cl);padding:16px 22px;font-size:22px;line-height:1.45}
+.warn{background:#fff7c2;border-top:4px solid var(--amar);padding:14px 22px;font-size:22px;line-height:1.45}
+.figure{display:flex;justify-content:center;align-items:center;height:640px}
+.figure img{max-width:100%;max-height:100%;border:1px solid var(--linha)}
+table.t{border-collapse:collapse;width:100%;font-size:22px}
+table.t td,table.t th{padding:12px 14px;border-bottom:1px solid var(--linha);text-align:left;vertical-align:top}
+table.t th{color:var(--azul);font-size:16px;text-transform:uppercase;letter-spacing:.08em}
+table.t td:first-child b{font-size:26px}
+ol.refs li{font-size:inherit;line-height:inherit;margin-bottom:6px}
+.hint{font-size:17px;color:var(--cinza);font-style:italic}
+/* capa */
+#capa{background:var(--azul);color:#fff;padding:0}
+#capa .logo{position:absolute;left:80px;top:70px;height:58px}
+#capa h1{position:absolute;left:90px;top:230px;color:#fff}
+#capa h1 .hl{color:var(--azul)}
+#capa .sub{position:absolute;left:90px;top:520px;font-size:28px;line-height:1.4;color:#dce9f5;max-width:900px;margin:0}
+#capa .autor{position:absolute;left:90px;bottom:80px;font-size:22px;line-height:1.5;margin:0;color:#fff}
+#capa .autor b{color:#fff}
+#capa svg{position:absolute;right:0;bottom:170px}
+#capa-ecg{stroke:var(--amar);stroke-width:7;fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:1;stroke-dashoffset:1;animation:desenha 2.4s ease .3s forwards}
+@keyframes desenha{to{stroke-dashoffset:0}}
+#help{position:absolute;inset:0;background:rgba(3,69,120,.94);color:#fff;display:none;align-items:center;justify-content:center;z-index:10;font-size:26px;line-height:1.7}
+#help.show{display:flex}
+#help b{color:var(--amar)}
+
+/* votação ao vivo */
+.opts .vote{position:relative;overflow:hidden}
+.opts .vote>*{position:relative;z-index:1}
+.opts .vote .barra{position:absolute;left:0;top:4px;bottom:4px;width:0;background:var(--azul-cl);z-index:0;transition:width .7s cubic-bezier(.2,.8,.2,1)}
+.opts.on .vote[data-correct] .barra{background:#fff2a0}
+.opts .vote .cnt{margin-left:auto;padding-left:16px;font-weight:800;color:var(--azul);font-size:21px;white-space:nowrap;opacity:0;transition:opacity .4s}
+.ao-vivo .opts.on .vote .cnt,.ver-votos .opts .vote .cnt{opacity:1}
+.opts .vote .barra{opacity:0}
+.ao-vivo .opts.on .vote .barra,.ver-votos .opts .vote .barra{opacity:1}
+.qrbox{position:absolute;right:80px;top:26px;width:150px;text-align:center;font-size:13px;line-height:1.3;color:var(--azul);font-weight:700;display:none;z-index:4;cursor:zoom-in}
+.ao-vivo .qrbox{display:block}
+.qrbox svg{width:150px;height:150px;display:block;border:3px solid var(--azul)}
+.qrbox .n{font-size:22px;font-weight:800;display:block;margin-top:2px}
+.qrbox .n.off{color:var(--cinza)}
+#qrbig{position:absolute;inset:0;background:var(--azul);z-index:9;display:none;align-items:center;justify-content:center;gap:70px;color:#fff}
+#qrbig.show{display:flex}
+#qrbig svg{width:560px;height:560px}
+#qrbig .tx{font-size:44px;font-weight:800;text-transform:uppercase;line-height:1.15;max-width:560px}
+#qrbig .tx small{display:block;font-size:22px;font-weight:500;text-transform:none;color:#dce9f5;margin-top:20px;word-break:break-all}
+#qrbig .tx b{color:var(--amar)}
+/* slide final */
+#fim{background:var(--azul);color:#fff}
+#fim h2{color:#fff;font-size:64px;margin-top:40px}
+#fim h2 .hl{color:var(--azul)}
+#fim .qrs{display:flex;gap:110px;margin-top:40px}
+#fim .q{width:330px}
+#fim .q svg{width:330px;height:330px;display:block}
+#fim .q p{margin:16px 0 0;font-size:24px;font-weight:700}
+#fim .q small{display:block;color:#dce9f5;font-size:16px;font-weight:500;margin-top:4px}
+#fim .logo{position:absolute;right:80px;bottom:60px;height:50px}
+#fim .kicker{color:var(--amar)}
+</style>
+</head>
+<body>
+<div id="stage">
+
+<!-- 1 CAPA -->
+<section class="slide" id="capa">
+  <img class="logo" src="../assets/img/fpp-logo-branco.png" alt="Faculdades Pequeno Príncipe">
+  <h1>Estratificação de risco<br>da dor torácica na<br><span class="hl">emergência</span></h1>
+  <p class="sub">Quem vai para casa, quem vai para a unidade coronária, quem vai para o cateterismo — e quando.</p>
+  <p class="autor"><b>Prof. Wilton F. Gomes</b><br>Medicina · 8º período · Atividade Acadêmica · 2026-2</p>
+  <svg width="760" height="160" viewBox="0 0 760 160"><path id="capa-ecg" pathLength="1" d="M0 100 H220 l14 -8 l14 8 H290 l10 14 l18 -96 l18 116 l12 -34 H400 q30 -40 60 0 H760"/></svg>
+</section>
+
+<!-- 2 POR QUE -->
+<section class="slide">
+  <div class="kicker">Ponto de partida</div>
+  <h2>Por que <span class="hl">estratificar</span>?</h2>
+  <div class="grid" style="grid-template-columns:repeat(3,1fr);margin-top:40px">
+    <div class="card g" data-step="1"><h3>Muito baixo risco</h3><p>Identificar quem pode ter <b>alta segura</b> e seguir a investigação no ambulatório.</p></div>
+    <div class="card r" data-step="2"><h3>Alto risco</h3><p>Identificar quem precisa de <b>estratégia invasiva</b> — e com que urgência.</p></div>
+    <div class="card n" data-step="3"><h3>Prognóstico</h3><p>Prever a evolução para definir <b>onde internar</b>, quanto monitorar e quanto tratar (inclusive o risco de sangrar).</p></div>
+  </div>
+  <p data-step="4" style="margin-top:60px;font-size:30px;text-align:center">Dor torácica responde por milhões de atendimentos de emergência por ano;<br>a minoria é SCA — <b>o desafio é não mandar para casa quem infarta e não internar todo mundo.</b></p>
+</section>
+
+<!-- 3 QUATRO PERGUNTAS -->
+<section class="slide">
+  <div class="kicker">Roteiro</div>
+  <h2><span class="hl">Cinco perguntas</span> na sala de emergência</h2>
+  <div class="lista" style="margin-top:10px">
+    <div class="it" data-step="1"><span class="nn">1</span><p class="q">É infarto?</p><p class="a">ECG em 10 min · <b>troponina ultrassensível 0/1 h</b></p></div>
+    <div class="it" data-step="2"><span class="nn">2</span><p class="q">Pode ir para casa?</p><p class="a"><b>HEART</b> + troponina</p></div>
+    <div class="it" data-step="3"><span class="nn">3</span><p class="q">Quão grave está agora?</p><p class="a"><b>Killip</b></p></div>
+    <div class="it" data-step="4"><span class="nn">4</span><p class="q">Qual o risco de eventos — e de sangrar?</p><p class="a"><b>TIMI · GRACE</b> · CRUSADE / ARC-HBR</p></div>
+    <div class="it" data-step="5"><span class="nn">5</span><p class="q">Cateterismo: quem e quando?</p><p class="a">Imediato · precoce · seletivo</p></div>
+  </div>
+</section>
+
+<!-- 4 CASO 1 (VOTO) -->
+<section class="slide">
+  <div class="kicker">Caso 1 · vote antes de continuar</div>
+  <h2>Pontada no peito há <span class="hl">4 horas</span></h2>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:40px">
+    <div class="caso"><div class="fict">caso fictício</div>
+      Homem, <b>42 anos</b>, tabagista, sem outros fatores de risco.<br>
+      Dor em pontada no hemitórax esquerdo, piora à inspiração profunda, iniciada <b>há 4 h</b>.<br>
+      PA 128×78 mmHg · FC 76 bpm · exame físico normal.<br>
+      ECG: ritmo sinusal, <b>normal</b>.<br>
+      hs-cTnT na admissão: <b>3 ng/L</b>.
+    </div>
+    <div>
+      <p style="margin-top:0"><b>Qual a conduta?</b></p>
+      <div class="opts">
+        <button class="vote">A · Internar na unidade coronária</button>
+        <button class="vote">B · Cateterismo em até 24 h</button>
+        <button class="vote">C · Alta com reavaliação ambulatorial</button>
+        <button class="vote">D · Observar e repetir troponina em 6 h</button>
+      </div>
+      <p class="hint" style="margin-top:24px">Guarde o seu voto — a resposta vem depois da troponina e do HEART.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 5 CURVA DA TROPONINA -->
+<section class="slide">
+  <div class="kicker">Pergunta 1 · É infarto?</div>
+  <h2>Troponina ultrassensível: o valor <span class="hl">e a variação</span></h2>
+  <div style="display:grid;grid-template-columns:1000px 1fr;gap:30px">
+    <svg id="tropo" width="1000" height="560" viewBox="0 0 1000 560"></svg>
+    <div>
+      <p data-step="1">A ultrassensível detecta concentrações <b>10–100× menores</b>; o percentil 99 fica muito abaixo do limite da troponina convencional.</p>
+      <p data-step="3">Na chegada precoce o 1º valor pode ser <b>normal</b> — o <b>delta em 1 h</b> denuncia o IAM.</p>
+      <p data-step="4">A convencional só “positiva” horas depois: daí o antigo “repetir em 6–9 h”.</p>
+    </div>
+  </div>
+  <div class="src">Esquema ilustrativo — valores e tempos aproximados, não em escala. Percentil 99 do ensaio Elecsys hs-cTnT = 14 ng/L.</div>
+</section>
+
+<!-- 6 ALGORITMO 0/1h -->
+<section class="slide">
+  <div class="kicker">Pergunta 1 · É infarto?</div>
+  <h2>Algoritmo <span class="hl">0/1 h</span> — troponina T ultrassensível</h2>
+  <div id="flow01" class="flow" style="width:1440px;height:560px"></div>
+  <p data-step="5" class="small" style="margin-top:6px">Pontos de corte do ensaio <b>Elecsys hs-cTnT</b> (ESC 2023). Cada ensaio tem os seus — use os do seu laboratório. A SBC 2025 aceita 0/1 h ou 0/2 h como primeira escolha.</p>
+  <div class="src">Byrne RA et al. 2023 ESC Guidelines for ACS. Eur Heart J 2023 · Diretriz SBC de Dor Torácica na Emergência 2025.</div>
+</section>
+
+<!-- 7 HEART -->
+<section class="slide">
+  <div class="kicker">Pergunta 2 · Pode ir para casa?</div>
+  <h2><span class="hl">HEART</span> score <span class="small">— clique para calcular</span></h2>
+  <div style="display:grid;grid-template-columns:930px 1fr;gap:30px">
+    <div>
+      <div id="heartcalc" class="calc"></div>
+      <div class="total">HEART = <b id="hTotal">—</b> <span id="hCat" class="small"></span><button class="btn-reset" id="hReset">limpar</button></div>
+    </div>
+    <div>
+      <svg id="heartchart" width="470" height="440"></svg>
+      <p class="small" style="margin:0">MACE em 6 semanas (IAM, revascularização ou morte)</p>
+    </div>
+  </div>
+  <div class="src">Six AJ et al. Neth Heart J 2008;16:191-6 · Backus BE et al. Int J Cardiol 2013;168:2153-8 (validação prospectiva, n = 2.440).</div>
+</section>
+
+<!-- 8 HEART + TROPONINA -->
+<section class="slide">
+  <div class="kicker">Pergunta 2 · Pode ir para casa?</div>
+  <h2>HEART + troponina = <span class="hl">decisão</span></h2>
+  <div class="grid" style="grid-template-columns:1fr 1fr;margin-top:10px">
+    <div class="card g" data-step="1"><h3>HEART ≤ 3 + IAM descartado (0/1 h)</h3><p><b>Alta</b> com reavaliação ambulatorial.<br>Baixo risco ≈ 1/3 a 1/2 dos pacientes com dor torácica — economia de leitos, exames e tempo.</p></div>
+    <div class="card a" data-step="2"><h3>HEART ≥ 4 ou dúvida diagnóstica</h3><p>Não é alta direta: <b>estratificação não invasiva</b> (angio-TC ou teste funcional com imagem), na internação ou em observação.</p></div>
+  </div>
+  <div class="warn" data-step="3" style="margin-top:28px"><b>Não use o HEART para dar alta</b> quando a história é muito suspeita, a troponina está elevada ou em curva, o ECG é isquêmico ou há instabilidade — o escore não substitui o julgamento clínico.</div>
+  <p data-step="4" class="small" style="margin-top:24px">O HEART foi derivado com troponina convencional; hoje entra <b>depois</b> do algoritmo de troponina ultrassensível (como no fluxograma da SBC 2025).</p>
+  <div class="src">Diretriz SBC de Dor Torácica na Emergência 2025 · Backus 2013.</div>
+</section>
+
+<!-- 9 CASO 1 RESPOSTA -->
+<section class="slide">
+  <div class="kicker">Caso 1 · resposta</div>
+  <h2>Pontada no peito há <span class="hl">4 horas</span></h2>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:40px">
+    <div>
+      <div class="answer" data-step="1"><b>Troponina:</b> hs-cTnT 0 h = 3 ng/L (&lt; 5) com dor há &gt; 3 h → <b>rule-out</b> com uma única dosagem.</div>
+      <div class="answer" data-step="2" style="margin-top:16px"><b>HEART = 1</b><br>História pouco suspeita 0 · ECG normal 0 · Idade &lt; 45 0 · 1 fator de risco 1 · Troponina normal 0</div>
+      <div class="warn" data-step="4" style="margin-top:16px">E se a dor tivesse começado <b>há 1 h</b>? Uma dosagem não basta: <b>repetir em 1 h</b> e aplicar o delta.</div>
+    </div>
+    <div class="opts" data-onstep="3" style="align-content:start">
+      <button class="vote">A · Internar na unidade coronária</button>
+      <button class="vote">B · Cateterismo em até 24 h</button>
+      <button class="vote" data-correct>C · Alta com reavaliação ambulatorial</button>
+      <button class="vote">D · Observar e repetir troponina em 6 h</button>
+    </div>
+  </div>
+</section>
+
+<!-- 10 KILLIP -->
+<section class="slide">
+  <div class="kicker">Pergunta 3 · Quão grave está agora?</div>
+  <h2>Classificação de <span class="hl">Killip</span></h2>
+  <div style="display:grid;grid-template-columns:780px 1fr;gap:40px">
+    <table class="t">
+      <tr><th>Classe</th><th>Achado clínico</th></tr>
+      <tr data-step="1"><td><b>I</b></td><td>Sem sinais de congestão</td></tr>
+      <tr data-step="1"><td><b>II</b></td><td>Estertores em bases, B3, turgência jugular</td></tr>
+      <tr data-step="1"><td><b>III</b></td><td>Edema agudo de pulmão (estertores &gt; metade dos campos)</td></tr>
+      <tr data-step="1"><td><b>IV</b></td><td>Choque cardiogênico</td></tr>
+    </table>
+    <div><svg id="killipchart" width="560" height="440"></svg><p class="small" style="margin:0">Mortalidade hospitalar na série original (n = 250, era pré-reperfusão)</p></div>
+  </div>
+  <p data-step="3" style="margin-top:20px">Só exame físico, à beira do leito, em 1 minuto. <b>Killip ≥ II</b> pesa no GRACE e contraindica betabloqueador na fase aguda.</p>
+  <div class="src">Killip T, Kimball JT. Am J Cardiol 1967;20:457-64. A mortalidade atual é bem menor, mas o gradiente se mantém.</div>
+</section>
+
+<!-- 11 TIMI -->
+<section class="slide">
+  <div class="kicker">Pergunta 4 · Risco de eventos</div>
+  <h2><span class="hl">TIMI</span> risk score <span class="small">— 1 ponto cada · clique para marcar</span></h2>
+  <div style="display:grid;grid-template-columns:860px 1fr;gap:40px">
+    <div>
+      <div id="timicalc" class="chips"></div>
+      <div class="total">TIMI = <b id="tTotal">0</b> <span id="tCat" class="small"></span><button class="btn-reset" id="tReset">limpar</button></div>
+      <p class="small" data-step="2">0–2 baixo · 3–4 intermediário · ≥ 5 alto. Simples de memorizar; menos discriminativo que o GRACE.</p>
+    </div>
+    <div><svg id="timichart" width="540" height="420"></svg><p class="small" style="margin:0">Morte, IAM ou revascularização urgente em 14 dias</p></div>
+  </div>
+  <div class="src">Antman EM et al. JAMA 2000;284:835-42 (TIMI 11B).</div>
+</section>
+
+<!-- 12 GRACE -->
+<section class="slide">
+  <div class="kicker">Pergunta 4 · Risco de eventos</div>
+  <h2><span class="hl">GRACE</span> — o escore mais acurado</h2>
+  <div style="display:grid;grid-template-columns:600px 1fr;gap:50px">
+    <div class="card n" data-step="1"><h3>8 variáveis da admissão</h3>
+      <p style="line-height:1.6">Idade · FC · PA sistólica · creatinina<br>Killip · parada cardíaca na admissão<br>Desvio de ST · marcador de necrose elevado</p>
+      <p class="small" style="margin-top:14px">Precisa de calculadora (app GRACE 2.0, MDCalc). Prevê mortalidade hospitalar e em 6 meses.</p></div>
+    <div>
+      <svg id="gracebar" width="780" height="285" viewBox="0 0 820 300">
+        <text x="0" y="40" class="cat" fill="#005CA0" letter-spacing="2">MORTALIDADE HOSPITALAR (SCASSST)</text>
+        <rect class="growx" data-step="2" x="0" y="70" width="300" height="80" fill="#9fc0dc"/>
+        <rect class="growx" data-step="3" x="300" y="70" width="220" height="80" fill="#FFDD09"/>
+        <rect class="growx" data-step="4" x="520" y="70" width="300" height="80" fill="#005CA0"/>
+        <text data-step="2" x="150" y="120" text-anchor="middle" fill="#034578" font-size="28" font-weight="700">≤ 108</text>
+        <text data-step="3" x="410" y="120" text-anchor="middle" fill="#034578" font-size="28" font-weight="700">109–140</text>
+        <text data-step="4" x="670" y="120" text-anchor="middle" fill="#fff" font-size="28" font-weight="700">&gt; 140</text>
+        <text data-step="2" x="150" y="190" text-anchor="middle" class="val">&lt; 1%</text>
+        <text data-step="3" x="410" y="190" text-anchor="middle" class="val">1–3%</text>
+        <text data-step="4" x="670" y="190" text-anchor="middle" class="val">&gt; 3%</text>
+        <text data-step="2" x="150" y="225" text-anchor="middle" class="catsub">baixo</text>
+        <text data-step="3" x="410" y="225" text-anchor="middle" class="catsub">intermediário</text>
+        <text data-step="4" x="670" y="225" text-anchor="middle" class="catsub">alto</text>
+      </svg>
+      <div class="warn" data-step="5" style="margin-top:10px"><b>GRACE &gt; 140</b> é critério de <b>alto risco</b> → estratégia invasiva precoce (&lt; 24 h).</div>
+    </div>
+  </div>
+  <div class="src">Granger CB et al. Arch Intern Med 2003;163:2345-53 · Byrne RA et al. ESC 2023 · Nicolau JC et al. Diretriz SBC AI/IAMSSST 2021.</div>
+</section>
+
+<!-- 13 SANGRAMENTO -->
+<section class="slide">
+  <div class="kicker">Pergunta 4 · … e de sangrar</div>
+  <h2>Risco <span class="hl">hemorrágico</span> também se estratifica</h2>
+  <div style="display:grid;grid-template-columns:1fr 640px;gap:40px">
+    <div>
+      <p data-step="1">Sangramento maior na SCA aumenta mortalidade tanto quanto um novo IAM.</p>
+      <p data-step="1"><b>CRUSADE</b>: Ht, ClCr, FC, sexo, IC, doença vascular, DM, PAS.</p>
+      <p data-step="3"><b>ARC-HBR</b> (alto risco de sangramento): idade ≥ 75, anticoagulação oral, DRC grave, anemia, plaquetopenia, sangramento prévio, AVC, câncer ativo, cirurgia recente…</p>
+      <p data-step="4">Na prática: <b>acesso radial</b>, dose ajustada à função renal e escolha do antiplaquetário/duração da DAPT.</p>
+    </div>
+    <div><svg id="crusadechart" width="640" height="440"></svg><p class="small" style="margin:0">Sangramento maior intra-hospitalar por faixa de CRUSADE</p></div>
+  </div>
+  <div class="src">Subherwal S et al. Circulation 2009;119:1873-82 · Urban P et al. Circulation 2019;140:240-61 (ARC-HBR).</div>
+</section>
+
+<!-- 14 CASO 2 -->
+<section class="slide">
+  <div class="kicker">Caso 2 · vote</div>
+  <h2>Dor em repouso, diabética, <span class="hl">72 anos</span></h2>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:40px">
+    <div>
+      <div class="caso"><div class="fict">caso fictício</div>
+        Mulher, <b>72 anos</b>. HAS, DM, dislipidemia. Usa <b>AAS</b>.<br>
+        <b>2 episódios</b> de dor em aperto em repouso nas últimas 24 h; o último há 2 h.<br>
+        PA 150×90 · FC 84 · pulmões limpos. Creatinina 1,3.<br>
+        ECG: <b>infra de ST 1 mm</b> em V4–V6.<br>
+        hs-cTnT: 0 h = <b>38</b> · 1 h = <b>61</b> ng/L.
+      </div>
+      <div class="answer" data-step="2" style="margin-top:16px">
+        Δ1h = 23 e 1 h ≥ 52 → <b>rule-in: IAMSSST</b> · Killip I<br>
+        <b>TIMI 6</b> (idade, ≥ 3 FR, AAS, ≥ 2 episódios, ST, marcador) → 40,9%<br>
+        <b>GRACE ≈ 160</b> (&gt; 140) → alto risco
+      </div>
+    </div>
+    <div>
+      <p style="margin-top:0"><b>Qual a conduta?</b></p>
+      <div class="opts" data-onstep="3">
+        <button class="vote">A · Alta e teste ergométrico ambulatorial</button>
+        <button class="vote">B · Internar e fazer estratificação não invasiva</button>
+        <button class="vote" data-correct>C · AAS + anticoagulação, cateterismo &lt; 24 h, sem pré-tratamento rotineiro com inibidor de P2Y12</button>
+        <button class="vote">D · Ticagrelor 180 mg já e cateterismo em até 72 h</button>
+      </div>
+      <p class="hint" data-step="1">Antes de revelar: calcule o TIMI no slide anterior.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 15 MEDIDAS INICIAIS -->
+<section class="slide">
+  <div class="kicker">Risco intermediário / alto</div>
+  <h2>Medidas iniciais — <span class="hl">o que mudou</span></h2>
+  <div class="grid" style="grid-template-columns:repeat(4,1fr);gap:18px">
+    <div class="card r" data-step="1"><h3>Oxigênio <span class="tag">atualizado</span></h3><p>Só se <b>SatO₂ &lt; 90%</b>. Rotina sem hipoxemia não traz benefício (DETOX₂).</p></div>
+    <div class="card n" data-step="1"><h3>Nitrato</h3><p>Alívio da dor. Evitar se PAS &lt; 90, IAM de VD ou uso de inibidor de PDE-5.</p></div>
+    <div class="card n" data-step="1"><h3>Morfina</h3><p><b>Não</b> de rotina: atrasa a absorção do P2Y12 oral. Reservar para dor refratária.</p></div>
+    <div class="card n" data-step="1"><h3>AAS</h3><p>Dose de ataque assim que possível, depois manutenção 75–100 mg/dia.</p></div>
+    <div class="card r" data-step="2"><h3>Inibidor de P2Y12 <span class="tag">atualizado</span></h3><p><b>Sem pré-tratamento rotineiro</b> se o cateterismo for &lt; 24 h: dar após conhecer a anatomia.</p></div>
+    <div class="card n" data-step="2"><h3>Anticoagulação</h3><p>Enoxaparina ou fondaparinux; heparina não fracionada na sala de hemodinâmica.</p></div>
+    <div class="card r" data-step="2"><h3>Betabloqueador <span class="tag">ressalva</span></h3><p>Oral nas primeiras 24 h <b>só sem</b> IC/Killip ≥ II, baixo débito, risco de choque ou BAV.</p></div>
+    <div class="card n" data-step="2"><h3>Estatina</h3><p><b>Alta intensidade</b> precoce, independente do LDL basal.</p></div>
+  </div>
+  <p data-step="3" style="margin-top:24px"><b>Onde:</b> unidade coronária / monitorização contínua · <b>Depois:</b> definir a estratégia — conservadora ou invasiva.</p>
+  <div class="src">Byrne RA et al. ESC 2023 · Rao SV et al. ACC/AHA 2025 ACS Guideline · Hofmann R et al. NEJM 2017;377:1240-9 (DETO2X).</div>
+</section>
+
+<!-- 16 CONSERVADORA x INVASIVA -->
+<section class="slide">
+  <div class="kicker">Pergunta 5 · Cateterismo</div>
+  <h2>Estratégia <span class="hl">invasiva</span> × seletiva</h2>
+  <div style="display:grid;grid-template-columns:1fr 1fr 560px;gap:26px">
+    <div class="card r" data-step="1"><h3>Invasiva</h3><p>A anatomia define o tratamento: clínico, ICP ou cirurgia.<br><br>Discrimina na hora:<br>• sem lesão obstrutiva (até 20%)<br>• tronco / multiarterial complexo (até 20%)</p></div>
+    <div class="card n" data-step="2"><h3>Seletiva</h3><p>Teste não invasivo de isquemia primeiro.<br><br>Cateterismo só se isquemia importante, recorrência ou piora.</p></div>
+    <div><svg id="foxchart" width="560" height="440"></svg><p class="small" style="margin:0">Redução absoluta de morte CV ou IAM em 5 anos com estratégia invasiva de rotina</p></div>
+  </div>
+  <p data-step="4" style="font-size:34px;text-align:center;margin-top:24px"><b>Quanto maior o risco, maior o benefício da estratégia invasiva.</b></p>
+  <div class="src">Fox KAA et al. J Am Coll Cardiol 2010;55:2435-45 (meta-análise FIR: FRISC-II, ICTUS, RITA-3; n = 5.467).</div>
+</section>
+
+<!-- 17 QUANDO -->
+<section class="slide">
+  <div class="kicker">Pergunta 5 · Cateterismo</div>
+  <h2>Quem e <span class="hl">quando</span></h2>
+  <svg width="1440" height="70" viewBox="0 0 1440 70" style="display:block">
+    <path class="draw" data-step="1" pathLength="1" d="M10 35 H1420" stroke="#005CA0" stroke-width="4" fill="none"/>
+    <text data-step="1" x="10" y="20" class="catsub">chegada</text>
+    <text data-step="1" x="470" y="20" class="cat" font-weight="700">2 h</text>
+    <text data-step="2" x="950" y="20" class="cat" font-weight="700">24 h</text>
+    <text data-step="3" x="1300" y="20" class="cat" font-weight="700">internação</text>
+  </svg>
+  <div class="grid" style="grid-template-columns:repeat(3,1fr);gap:20px">
+    <div class="card r" data-step="1"><h3>Imediata · &lt; 2 h</h3><p class="small" style="font-weight:800;margin-bottom:8px"><span class="hl">MUITO ALTO RISCO</span></p><p>• Instabilidade hemodinâmica / choque<br>• Dor recorrente ou refratária<br>• Arritmia maligna / PCR<br>• Complicação mecânica<br>• IC aguda pela SCA<br>• ST dinâmico recorrente (supra intermitente)</p></div>
+    <div class="card a" data-step="2"><h3>Precoce · &lt; 24 h</h3><p class="small" style="font-weight:800;margin-bottom:8px;color:var(--azul)">ALTO RISCO</p><p>• IAMSSST confirmado (rule-in)<br>• Alterações dinâmicas de ST/T<br>• Supra de ST transitório<br>• <b>GRACE &gt; 140</b></p></div>
+    <div class="card n" data-step="3"><h3>Sem critério de alto risco</h3><p class="small" style="font-weight:700;margin-bottom:8px">AVALIAR SUSPEITA</p><p>• Suspeita alta de AI → invasiva durante a internação<br>• Suspeita baixa → <b>seletiva</b>, guiada por teste não invasivo</p></div>
+  </div>
+  <div class="warn" data-step="4" style="margin-top:20px;font-size:22px">A tabela da <b>SBC 2021</b> ainda tem a janela de <b>&lt; 72 h</b> para risco intermediário (DM, DRC, FEVE &lt; 40%, ICP/CRM prévia, GRACE 109–140). A <b>ESC (2020/2023)</b> abandonou essa janela.</div>
+  <div class="src">Byrne RA et al. ESC 2023 · Nicolau JC et al. Diretriz SBC AI/IAMSSST 2021 (tabela original no apêndice).</div>
+</section>
+
+<!-- 18 CASO 3 -->
+<section class="slide">
+  <div class="kicker">Caso 3 · vote</div>
+  <h2>Dor que não passa e <span class="hl">falta de ar</span></h2>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:40px">
+    <div>
+      <div class="caso"><div class="fict">caso fictício</div>
+        Homem, <b>74 anos</b>. Dor em aperto há 50 min, <b>persistente</b> apesar de nitrato SL e EV.<br>
+        PA 104×62 · FC 112 · SatO₂ <b>86%</b> em ar ambiente.<br>
+        <b>Estertores até os ápices</b> bilateralmente.<br>
+        ECG: infra de ST difuso + <b>supra em aVR</b>.
+      </div>
+      <div class="answer" data-step="1" style="margin-top:16px"><b>Killip III</b> + dor refratária + IC aguda → <b>muito alto risco</b>: cateterismo imediato.<br>O₂ indicado (SatO₂ &lt; 90%). <b>Sem betabloqueador.</b> Não espere a 2ª troponina.</div>
+    </div>
+    <div>
+      <p style="margin-top:0"><b>Classe de Killip e conduta?</b></p>
+      <div class="opts" data-onstep="1">
+        <button class="vote">A · Killip II — cateterismo em &lt; 24 h</button>
+        <button class="vote" data-correct>B · Killip III — cateterismo imediato (&lt; 2 h), O₂, sem betabloqueador</button>
+        <button class="vote">C · Killip IV — trombólise</button>
+        <button class="vote">D · Killip III — metoprolol EV e cateterismo em &lt; 72 h</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 19 BAIXO RISCO: EXAMES -->
+<section class="slide">
+  <div class="kicker">Baixo risco / zona intermediária</div>
+  <h2>Qual exame <span class="hl">não invasivo</span>?</h2>
+  <div style="display:grid;grid-template-columns:900px 1fr;gap:30px">
+    <div><svg id="examchart" width="900" height="470"></svg><p class="small" style="margin:0">Acurácia para DAC anatomicamente significativa (meta-análise; referência = cateterismo)</p></div>
+    <div>
+      <p data-step="2" style="font-size:22px"><b>Angio-TC</b>: maior sensibilidade e ótimo VPN → <b>exclui</b> DAC; avalia anomalias e, com protocolo, aorta e TEP. Limites: FC alta, arritmia, calcificação intensa, DRC.</p>
+      <p data-step="3" style="font-size:22px"><b>Funcionais com imagem</b> (eco de estresse, cintilografia, RM cardíaca): localizam e quantificam isquemia; RM também faz o diferencial (miocardite).</p>
+      <p data-step="4" style="font-size:22px"><b>Ergométrico</b>: disponível e barato, mas menos acurado; não interpretável com BRE, pré-excitação, marca-passo ou ST basal alterado. Duke score ainda dá prognóstico.</p>
+    </div>
+  </div>
+  <div class="src">Knuuti J et al. Eur Heart J 2018;39:3322-30 (base da tabela da ESC 2019 para síndromes coronarianas crônicas) · ESC 2023 · SBC 2025.</div>
+</section>
+
+<!-- 20 FLUXOGRAMA FINAL -->
+<section class="slide">
+  <div class="kicker">Juntando tudo</div>
+  <h2 style="margin-bottom:14px">Do pronto-socorro <span class="hl">à conduta</span></h2>
+  <div id="flowfinal" class="flow" style="width:1440px;height:690px;transform:scale(.92);transform-origin:50% 0"></div>
+</section>
+
+<!-- 21-24 APÊNDICE -->
+<section class="slide">
+  <div class="kicker">Apêndice · figura original da diretriz</div>
+  <h2 style="font-size:34px;margin-bottom:10px">SBC 2025 — fluxo da dor torácica aguda</h2>
+  <div class="figure"><img src="img/sbc2025-fluxo-dor-toracica.png" alt="Fluxograma SBC 2025"></div>
+</section>
+<section class="slide">
+  <div class="kicker">Apêndice · figura original da diretriz</div>
+  <h2 style="font-size:34px;margin-bottom:10px">SBC 2025 — fluxos 0-1 h e 0-2 h</h2>
+  <div class="figure"><img src="img/sbc2025-fluxo-0-1h.png" alt="Fluxo 0-1h SBC 2025"></div>
+</section>
+<section class="slide">
+  <div class="kicker">Apêndice · figura original da diretriz</div>
+  <h2 style="font-size:34px;margin-bottom:10px">SBC 2021 — avaliação invasiva na SCASSST</h2>
+  <div class="figure"><img src="img/sbc2021-tempo-invasiva.png" alt="Tabela SBC 2021"></div>
+</section>
+<section class="slide">
+  <div class="kicker">Apêndice · figura original da diretriz</div>
+  <h2 style="font-size:34px;margin-bottom:10px">SBC 2025 — 10 mensagens-chave</h2>
+  <div class="figure"><img src="img/sbc2025-top10.png" alt="Top 10 SBC 2025"></div>
+</section>
+
+<!-- 25 LEVE PARA CASA -->
+<section class="slide">
+  <div class="kicker">Para levar</div>
+  <h2>Cinco <span class="hl">mensagens</span></h2>
+  <div class="lista">
+    <div class="it" data-step="1"><span class="nn">1</span><p>ECG em 10 min; supra de ST ou instabilidade pulam a estratificação.</p></div>
+    <div class="it" data-step="2"><span class="nn">2</span><p>Troponina ultrassensível em <b>0/1 h</b> (ou 0/2 h): o delta vale tanto quanto o valor.</p></div>
+    <div class="it" data-step="3"><span class="nn">3</span><p><b>HEART ≤ 3</b> + IAM descartado → alta com seguimento ambulatorial.</p></div>
+    <div class="it" data-step="4"><span class="nn">4</span><p>Killip, GRACE (&gt; 140) e critérios clínicos definem <b>quando</b> cateterizar: &lt; 2 h ou &lt; 24 h.</p></div>
+    <div class="it" data-step="5"><span class="nn">5</span><p>O₂ só se SatO₂ &lt; 90% · sem morfina de rotina · sem pré-tratamento rotineiro com P2Y12 · estratifique também o sangramento.</p></div>
+  </div>
+</section>
+
+<!-- 26 REFERÊNCIAS -->
+<section class="slide">
+  <div class="kicker">Referências</div>
+  <h2>Para <span class="hl">estudar</span></h2>
+  <ol class="refs" style="font-size:18px;line-height:1.4;columns:2;column-gap:50px;margin:0;padding-left:24px">
+    <li>Byrne RA et al. 2023 ESC Guidelines for the management of acute coronary syndromes. Eur Heart J 2023;44:3720-826.</li>
+    <li>Rao SV et al. 2025 ACC/AHA/ACEP/NAEMSP/SCAI Guideline for the Management of Patients With Acute Coronary Syndromes. Circulation 2025.</li>
+    <li>Sociedade Brasileira de Cardiologia. Diretriz Brasileira de Atendimento à Dor Torácica na Unidade de Emergência — 2025. Arq Bras Cardiol 2025.</li>
+    <li>Nicolau JC et al. Diretrizes da SBC sobre Angina Instável e IAM sem Supradesnível do ST — 2021. Arq Bras Cardiol 2021;117:181-264.</li>
+    <li>Six AJ, Backus BE, Kelder JC. Chest pain in the emergency room: value of the HEART score. Neth Heart J 2008;16:191-6.</li>
+    <li>Backus BE et al. A prospective validation of the HEART score for chest pain patients at the emergency department. Int J Cardiol 2013;168:2153-8.</li>
+    <li>Killip T, Kimball JT. Treatment of myocardial infarction in a coronary care unit. Am J Cardiol 1967;20:457-64.</li>
+    <li>Antman EM et al. The TIMI risk score for unstable angina/non-ST elevation MI. JAMA 2000;284:835-42.</li>
+    <li>Granger CB et al. Predictors of hospital mortality in the GRACE registry. Arch Intern Med 2003;163:2345-53.</li>
+    <li>Subherwal S et al. Baseline risk of major bleeding in NSTEMI: the CRUSADE bleeding score. Circulation 2009;119:1873-82.</li>
+    <li>Urban P et al. Defining high bleeding risk in patients undergoing PCI (ARC-HBR). Circulation 2019;140:240-61.</li>
+    <li>Fox KAA et al. Long-term outcome of a routine versus selective invasive strategy in NSTE-ACS. J Am Coll Cardiol 2010;55:2435-45.</li>
+    <li>Hofmann R et al. Oxygen therapy in suspected acute myocardial infarction (DETO2X). N Engl J Med 2017;377:1240-9.</li>
+    <li>Knuuti J et al. The performance of non-invasive tests to rule-in and rule-out significant coronary artery stenosis. Eur Heart J 2018;39:3322-30.</li>
+  </ol>
+  <div class="src">Casos clínicos fictícios. Figuras do apêndice reproduzidas das diretrizes da SBC para fins didáticos.</div>
+</section>
+
+<!-- 27 FIM -->
+<section class="slide" id="fim">
+  <div class="kicker">Obrigado!</div>
+  <h2>Material da aula e <span class="hl">contato</span></h2>
+  <div class="qrs">
+    <div class="q"><div id="qr-aula"></div><p>Slides, resumo em PDF, calculadoras e quiz</p><small id="url-aula"></small></div>
+    <div class="q"><div id="qr-contato"></div><p>Prof. Wilton Gomes</p><small>Instagram · LinkedIn · Lattes · WhatsApp · e-mail</small></div>
+  </div>
+  <img class="logo" src="../assets/img/fpp-logo-branco.png" alt="FPP">
+</section>
+
+<div id="help"><div>
+<b>→ / espaço / PageDown</b> avança (passo a passo) · <b>← / PageUp</b> volta<br>
+<b>clique</b> na área livre do slide avança · <b>F</b> tela cheia · <b>Home/End</b> início/fim<br>
+<b>Q</b> QR grande da votação · <b>V</b> mostra/esconde votos · <b>H</b> ajuda · pontinhos vermelhos (canto) = passos restantes
+</div></div>
+<div id="qrbig"></div><div id="dots"></div><div id="num"></div>
+<footer><div id="bar"></div></footer>
+</div>
+
+<script src="../assets/firebase.js"></script>
+<script src="../assets/qrcode.js"></script>
+<script src="../assets/votos.js"></script>
+<script>
+const $=(s,r=document)=>r.querySelector(s),$$=(s,r=document)=>[...r.querySelectorAll(s)];
+const NS='http://www.w3.org/2000/svg';
+function el(tag,attrs,parent){const e=document.createElementNS(NS,tag);for(const k in attrs)e.setAttribute(k,attrs[k]);if(parent)parent.appendChild(e);return e}
+function txt(e,t){e.textContent=t;return e}
+
+/* ---------- gráfico de barras (séries agrupadas) ---------- */
+function barChart(sel,o){
+  const svg=$(sel),W=+svg.getAttribute('width'),H=+svg.getAttribute('height');
+  svg.setAttribute('viewBox',`0 0 ${W} ${H}`);
+  const L=o.left??20,B=o.bottom??70,T=o.top??44,R=10,n=o.cats.length,ns=o.series.length;
+  const cw=(W-L-R)/n,bw=Math.min(o.barW??100,cw*0.78/ns),step=o.step??1,stag=o.stagger??0.15;
+  el('line',{x1:L,y1:H-B,x2:W-R,y2:H-B,class:'axis'},svg);
+  const groups=[];
+  o.cats.forEach((c,i)=>{
+    groups[i]=[];
+    c.values.forEach((v,j)=>{
+      const x=L+i*cw+cw/2-ns*bw/2+j*bw+3,bh=(H-B-T)*v/o.max,y=H-B-bh;
+      const r=el('rect',{x,y,width:bw-6,height:Math.max(bh,1),rx:5,class:'bar grow','data-step':step,fill:(c.colors&&c.colors[j])||o.series[j].color},svg);
+      r.style.transitionDelay=(i*stag)+'s';groups[i].push(r);
+      const t=txt(el('text',{x:x+(bw-6)/2,y:y-10,class:'val','text-anchor':'middle','data-step':step},svg),c.text?c.text[j]:String(v).replace('.',',')+(o.unit??''));
+      if(ns>1)t.setAttribute('font-size','19');
+      t.style.transitionDelay=(i*stag+0.7)+'s';
+    });
+    txt(el('text',{x:L+i*cw+cw/2,y:H-B+30,class:'cat','text-anchor':'middle'},svg),c.label);
+    if(c.sub)txt(el('text',{x:L+i*cw+cw/2,y:H-B+54,class:'catsub','text-anchor':'middle'},svg),c.sub);
+  });
+  if(ns>1)o.series.forEach((s,j)=>{el('rect',{x:L+10+j*240,y:4,width:22,height:22,rx:4,fill:s.color},svg);txt(el('text',{x:L+40+j*240,y:22,class:'cat'},svg),s.name)});
+  return {hl(i){groups.forEach((g,k)=>g.forEach(r=>r.classList.toggle('hl',k===i)))}};
+}
+
+/* ---------- fluxograma ---------- */
+function flow(sel,nodes,edges){
+  const box=$(sel),svg=el('svg',{class:'flowsvg',width:'100%',height:'100%'});box.appendChild(svg);
+  const N={},incoming={};
+  edges.forEach(e=>incoming[e.t]=true);
+  nodes.forEach(n=>{N[n.id]=n;const d=document.createElement('div');d.className='node '+(n.cls||'');
+    Object.assign(d.style,{left:n.x+'px',top:n.y+'px',width:n.w+'px',height:n.h+'px'});
+    d.dataset.step=n.step;d.innerHTML='<div>'+n.html+'</div>';if(incoming[n.id])d.style.transitionDelay='.7s';box.appendChild(d)});
+  edges.forEach(e=>{
+    const a=N[e.f],b=N[e.t],st=e.step??b.step,col='#005CA0';let d,pts;
+    if(e.side==='h'){const right=b.x>a.x,x1=right?a.x+a.w:a.x,y=a.y+a.h/2,x2=right?b.x:b.x+b.w,s=right?-1:1;
+      d=`M${x1} ${y} H${x2+12*s}`;pts=`${x2+12*s},${y-8} ${x2+12*s},${y+8} ${x2},${y}`;}
+    else{const x1=a.x+a.w/2+(e.dx1||0),y1=a.y+a.h,x2=b.x+b.w/2+(e.dx2||0),y2=b.y,ym=e.ym??(y1+(y2-y1)/2);
+      d=x1===x2?`M${x1} ${y1} V${y2-12}`:`M${x1} ${y1} V${ym} H${x2} V${y2-12}`;pts=`${x2-8},${y2-13} ${x2+8},${y2-13} ${x2},${y2}`;}
+    el('path',{d,class:'edge draw',pathLength:1,'data-step':st,stroke:col},svg);
+    const h=el('polygon',{points:pts,fill:col,'data-step':st},svg);h.style.transitionDelay='.9s';
+  });
+}
+
+/* ---------- curva da troponina ---------- */
+function tropo(){
+  const svg=$('#tropo'),X=t=>80+t*75,V=t=>3+150/(1+Math.exp(-(t-6)/1.5)),Y=v=>500-v*2.6;
+  el('line',{x1:80,y1:500,x2:980,y2:500,class:'axis'},svg);el('line',{x1:80,y1:500,x2:80,y2:40,class:'axis'},svg);
+  for(let t=0;t<=12;t+=2)txt(el('text',{x:X(t),y:530,class:'catsub','text-anchor':'middle'},svg),t+' h');
+  txt(el('text',{x:530,y:556,class:'catsub','text-anchor':'middle'},svg),'horas desde o início da dor');
+  txt(el('text',{x:30,y:270,class:'catsub','text-anchor':'middle',transform:'rotate(-90 30 270)'},svg),'troponina (ng/L)');
+  const g1=el('g',{'data-step':1},svg);
+  el('line',{x1:80,y1:Y(14),x2:980,y2:Y(14),stroke:'#005CA0','stroke-width':3,'stroke-dasharray':'10 8'},g1);
+  txt(el('text',{x:975,y:Y(14)-10,'text-anchor':'end',fill:'#005CA0','font-size':20,'font-weight':700},g1),'percentil 99 — ultrassensível');
+  el('line',{x1:80,y1:Y(80),x2:980,y2:Y(80),stroke:'#9aa7b4','stroke-width':3,'stroke-dasharray':'10 8'},g1);
+  txt(el('text',{x:95,y:Y(80)-10,'text-anchor':'start',fill:'#6b7280','font-size':20,'font-weight':700},g1),'limiar da troponina convencional');
+  let d='';for(let t=0;t<=12.01;t+=0.1)d+=(t?'L':'M')+X(t).toFixed(1)+' '+Y(V(t)).toFixed(1);
+  el('path',{d,class:'draw','data-step':2,pathLength:1,stroke:'#034578','stroke-width':5,fill:'none'},svg);
+  const mark=(t,lab,st,col,lx,ly)=>{const g=el('g',{'data-step':st},svg);
+    el('line',{x1:X(t),y1:Y(V(t)),x2:X(t),y2:500,stroke:col,'stroke-width':2,'stroke-dasharray':'4 4'},g);
+    el('circle',{cx:X(t),cy:Y(V(t)),r:10,fill:col,stroke:'#fff','stroke-width':3},g);
+    if(lx<X(t)-20)el('circle',{cx:lx-14,cy:ly-7,r:8,fill:col},g);
+    txt(el('text',{x:lx,y:ly,fill:col,'font-size':22,'font-weight':700},g),lab);};
+  mark(1.5,'0 h: 10 ng/L (abaixo do p99!)',3,'#034578',125,80);
+  mark(2.5,'1 h: 16 ng/L → Δ = 6 → rule-in',3,'#005CA0',125,115);
+  mark(6.1,'convencional positiva só aqui',4,'#667085',X(6.1)+18,Y(V(6.1))+30);
+}
+
+/* ---------- calculadora HEART ---------- */
+const HEART=[['História',['Pouco suspeita','Moderadamente suspeita','Altamente suspeita']],
+ ['ECG',['Normal','Repolarização inespecífica','Desvio de ST significativo']],
+ ['Idade',['< 45 anos','45–64 anos','≥ 65 anos']],
+ ['Fatores de risco',['Nenhum','1–2 fatores','≥ 3 ou aterosclerose conhecida']],
+ ['Troponina',['≤ limite normal','1–3× o limite','> 3× o limite']]];
+let hv=Array(5).fill(null),hChart,tChart;
+function heartInit(){
+  const c=$('#heartcalc');
+  HEART.forEach(([lab,ops],i)=>{c.insertAdjacentHTML('beforeend',`<div class="lab">${lab}</div>`);
+    ops.forEach((o,p)=>{const b=document.createElement('button');b.className='opt';b.innerHTML=`<span class="pt">${p}</span>${o}`;
+      b.onclick=()=>{hv[i]=p;$$('.opt',c).filter((_,k)=>Math.floor(k/3)===i).forEach((x,k)=>x.classList.toggle('sel',k===p));heartUpd()};c.appendChild(b)})});
+  $('#hReset').onclick=()=>{hv.fill(null);$$('.opt',c).forEach(x=>x.classList.remove('sel'));heartUpd()};
+  hChart=barChart('#heartchart',{max:60,unit:'%',series:[{color:'#9fb3d1'}],cats:[
+    {label:'0–3',sub:'baixo',values:[1.7],colors:['#9fc0dc']},{label:'4–6',sub:'intermediário',values:[16.6],colors:['#FFDD09']},{label:'7–10',sub:'alto',values:[50.1],colors:['#034578']}]});
+}
+function heartUpd(){
+  const done=hv.every(v=>v!==null),s=hv.reduce((a,v)=>a+(v||0),0);
+  $('#hTotal').textContent=done?s:(hv.some(v=>v!==null)?s+'…':'—');
+  const cat=s<=3?0:s<=6?1:2;
+  $('#hCat').textContent=done?['baixo risco · 1,7%','intermediário · 16,6%','alto risco · 50,1%'][cat]:'';
+  hChart.hl(done?cat:-1);
+}
+
+/* ---------- calculadora TIMI ---------- */
+const TIMI=['Idade ≥ 65 anos','≥ 3 fatores de risco para DAC','DAC conhecida (estenose ≥ 50%)','AAS nos últimos 7 dias','≥ 2 episódios de angina em 24 h','Desvio de ST ≥ 0,5 mm','Marcador de necrose elevado'];
+function timiInit(){
+  const c=$('#timicalc');
+  TIMI.forEach(t=>{const b=document.createElement('button');b.className='chip';b.textContent=t;b.onclick=()=>{b.classList.toggle('sel');timiUpd()};c.appendChild(b)});
+  $('#tReset').onclick=()=>{$$('.chip',c).forEach(x=>x.classList.remove('sel'));timiUpd()};
+  tChart=barChart('#timichart',{max:45,unit:'%',barW:70,series:[{color:'#9fc0dc'}],cats:[
+    {label:'0–1',values:[4.7]},{label:'2',values:[8.3]},{label:'3',values:[13.2]},{label:'4',values:[19.9]},{label:'5',values:[26.2]},{label:'6–7',values:[40.9]}]});
+  timiUpd();
+}
+function timiUpd(){
+  const s=$$('#timicalc .chip.sel').length;$('#tTotal').textContent=s;
+  $('#tCat').textContent=s<=2?'baixo':s<=4?'intermediário':'alto';
+  tChart.hl(s<=1?0:s>=6?5:s-1);
+}
+
+/* ---------- montagem ---------- */
+function build(){
+  tropo();heartInit();timiInit();
+  barChart('#killipchart',{max:90,unit:'%',series:[{color:'#005CA0'}],cats:[
+    {label:'I',values:[6],colors:['#9fc0dc']},{label:'II',values:[17],colors:['#FFDD09']},{label:'III',values:[38],colors:['#005CA0']},{label:'IV',values:[81],colors:['#034578']}],step:2});
+  barChart('#crusadechart',{max:22,unit:'%',series:[{color:'#005CA0'}],step:2,cats:[
+    {label:'≤ 20',sub:'muito baixo',values:[3.1],colors:['#c9dbeb']},{label:'21–30',sub:'baixo',values:[5.5],colors:['#9fc0dc']},
+    {label:'31–40',sub:'moderado',values:[8.6],colors:['#FFDD09']},{label:'41–50',sub:'alto',values:[11.9],colors:['#005CA0']},{label:'> 50',sub:'muito alto',values:[19.5],colors:['#034578']}]});
+  barChart('#foxchart',{max:13,series:[{color:'#005CA0'}],step:3,barW:150,cats:[
+    {label:'Baixo / intermediário',values:[3.8],text:['2,0–3,8%'],colors:['#FFDD09']},{label:'Alto risco',values:[11.1],text:['11,1%'],colors:['#005CA0']}]});
+  barChart('#examchart',{max:105,unit:'%',barW:120,series:[{name:'Sensibilidade',color:'#005CA0'},{name:'Especificidade',color:'#FFDD09'}],stagger:.12,cats:[
+    {label:'Ergométrico',values:[58,62]},{label:'Eco estresse',values:[85,82]},{label:'SPECT',values:[87,70]},{label:'PET',values:[90,85]},{label:'RM estresse',values:[90,94]},{label:'Angio-TC',values:[97,78]}]});
+  flow('#flow01',[
+    {id:'a',x:420,y:0,w:600,h:70,cls:'navy',step:1,html:'Suspeita de IAMSSST · <b>hs-cTnT na admissão (0 h) e em 1 h</b>'},
+    {id:'b',x:0,y:150,w:440,h:140,cls:'lgreen',step:2,html:'<div><b>0 h &lt; 5 ng/L</b> e dor há &gt; 3 h<br><small>ou</small><b>0 h &lt; 12</b> e <b>Δ1h &lt; 3</b></div>'},
+    {id:'c',x:500,y:150,w:440,h:140,cls:'lamber',step:4,html:'Nenhum dos dois critérios'},
+    {id:'d',x:1000,y:150,w:440,h:140,cls:'lred',step:3,html:'<div><b>0 h ≥ 52 ng/L</b><br><small>ou</small><b>Δ1h ≥ 5</b></div>'},
+    {id:'e',x:0,y:370,w:440,h:120,cls:'green',step:2,html:'<div><b>RULE-OUT</b><small>IAM descartado → HEART decide a alta</small></div>'},
+    {id:'f',x:500,y:370,w:440,h:120,cls:'amber',step:4,html:'<div><b>OBSERVAÇÃO</b><small>3ª dosagem em 3 h + eco; reavaliar</small></div>'},
+    {id:'g',x:1000,y:370,w:440,h:120,cls:'red',step:3,html:'<div><b>RULE-IN</b><small>IAMSSST → internar, estratificar, cateterismo</small></div>'}
+  ],[{f:'a',t:'b',ym:110,color:'#9fc0dc'},{f:'a',t:'c',ym:110,color:'#FFDD09'},{f:'a',t:'d',ym:110,color:'#005CA0'},
+     {f:'b',t:'e',color:'#9fc0dc'},{f:'c',t:'f',color:'#FFDD09'},{f:'d',t:'g',color:'#005CA0'}]);
+  flow('#flowfinal',[
+    {id:'n1',x:420,y:0,w:600,h:54,cls:'navy',step:1,html:'Dor torácica aguda — suspeita de SCA'},
+    {id:'n2',x:420,y:90,w:600,h:54,cls:'navy',step:1,html:'ECG em até 10 min + história + exame físico'},
+    {id:'n3',x:0,y:196,w:400,h:104,cls:'red',step:2,html:'<div>Supra de ST ou equivalente<br><b>→ protocolo IAMCSST</b></div>'},
+    {id:'n5',x:470,y:196,w:500,h:104,cls:'lnavy',step:3,html:'<div>Estável, sem supra<br><b>troponina US 0/1 h (ou 0/2 h)</b></div>'},
+    {id:'n4',x:1040,y:196,w:400,h:104,cls:'red',step:2,html:'<div>Instabilidade, dor refratária, arritmia, IC aguda<br><b>→ invasiva imediata (&lt; 2 h)</b></div>'},
+    {id:'n6',x:0,y:350,w:440,h:60,cls:'green',step:4,html:'<b>Rule-out</b>'},
+    {id:'n7',x:500,y:350,w:440,h:60,cls:'amber',step:4,html:'<b>Observação</b>'},
+    {id:'n8',x:1000,y:350,w:440,h:60,cls:'red',step:4,html:'<b>Rule-in (IAMSSST)</b>'},
+    {id:'n9',x:0,y:460,w:210,h:72,cls:'lgreen',step:5,html:'HEART ≤ 3'},
+    {id:'n10',x:230,y:460,w:210,h:72,cls:'lamber',step:5,html:'HEART ≥ 4<br>ou dúvida'},
+    {id:'n11',x:500,y:460,w:440,h:72,cls:'lamber',step:6,html:'3ª troponina (3 h) + eco · reavaliar'},
+    {id:'n12',x:1000,y:460,w:440,h:72,cls:'lred',step:6,html:'Killip · GRACE · risco de sangramento'},
+    {id:'n13',x:0,y:590,w:210,h:96,cls:'green',step:7,html:'<b>Alta</b> + reavaliação ambulatorial'},
+    {id:'n14',x:230,y:590,w:710,h:96,cls:'amber',step:7,html:'<div><b>Estratificação não invasiva</b><small>angio-TC ou teste funcional com imagem</small></div>'},
+    {id:'n15',x:1000,y:590,w:440,h:96,cls:'red',step:7,html:'<div><b>Invasiva &lt; 24 h</b> (alto risco)<small>seletiva se sem critério de alto risco</small></div>'}
+  ],[{f:'n1',t:'n2'},{f:'n2',t:'n3',ym:170,color:'#005CA0'},{f:'n2',t:'n5',ym:172},{f:'n2',t:'n4',ym:172,color:'#005CA0'},
+     {f:'n5',t:'n6',ym:320,color:'#9fc0dc'},{f:'n5',t:'n7',ym:320,color:'#FFDD09'},{f:'n5',t:'n8',ym:320,color:'#005CA0'},
+     {f:'n6',t:'n9',ym:435,color:'#9fc0dc'},{f:'n6',t:'n10',ym:435,color:'#FFDD09'},{f:'n7',t:'n11',color:'#FFDD09'},{f:'n8',t:'n12',color:'#005CA0'},
+     {f:'n9',t:'n13',color:'#9fc0dc'},{f:'n10',t:'n14',dx2:-250,color:'#FFDD09'},{f:'n11',t:'n14',dx2:135,color:'#FFDD09'},{f:'n12',t:'n15',color:'#005CA0'}]);
+}
+
+function chrome(){
+  $$('.slide').forEach(s=>{if(s.id==='capa'||s.id==='fim')return;
+    const t=document.createElement('div');t.className='topo';s.prepend(t);
+    const r=document.createElement('div');r.className='rod';const src=$('.src',s);r.appendChild(src||document.createElement('span'));
+    const im=document.createElement('img');im.src='../assets/img/fpp-logo-azul.png';im.alt='FPP';r.appendChild(im);s.appendChild(r)});
+  $$('.opts .vote').forEach(b=>{const m=b.innerHTML.match(/^\s*([A-D]) · ([\s\S]*)$/);if(m)b.innerHTML=`<span class="lt">${m[1]}</span><span>${m[2]}</span>`});
+}
+/* ---------- votação ao vivo ---------- */
+const PRM=new URLSearchParams(location.search);
+const AO_VIVO=PRM.has('ao-vivo');
+const SALA=Votos.limpa(PRM.get('sala')||('sca-'+new Date().toISOString().slice(0,10)));
+const URL_AULA=SITE+'risco-sca/', URL_VOTO=c=>URL_AULA+'votar.html?s='+SALA+'&c='+c;
+const MAPA=[{c:'c1',qr:true},{c:'c1',qr:false},{c:'c2',qr:true},{c:'c3',qr:true}];
+function aoVivo(){
+  $('#qr-aula').innerHTML=Votos.qrSvg(URL_AULA);$('#qr-contato').innerHTML=Votos.qrSvg(SITE+'contato/');
+  $('#url-aula').textContent=URL_AULA.replace('https://','');
+  $$('.opts').forEach((o,i)=>{const m=MAPA[i];if(!m)return;o.dataset.caso=m.c;
+    $$('.vote',o).forEach(b=>{b.insertAdjacentHTML('afterbegin','<span class="barra"></span>');b.insertAdjacentHTML('beforeend','<span class="cnt"></span>')});
+    if(m.qr){const s=o.closest('.slide'),q=document.createElement('div');q.className='qrbox';q.dataset.caso=m.c;
+      q.innerHTML=Votos.qrSvg(URL_VOTO(m.c))+'Vote pelo celular<span class="n">0 votos</span>';q.onclick=e=>{e.stopPropagation();qrGrande(m.c)};s.appendChild(q)}});
+  if(!AO_VIVO)return;
+  document.body.classList.add('ao-vivo');
+  Votos.ouvir(SALA,res=>{
+    $$('.opts[data-caso]').forEach(o=>{const n=res[o.dataset.caso]||{total:0};
+      $$('.vote',o).forEach((b,i)=>{const L='ABCDE'[i],v=n[L]||0,p=n.total?Math.round(100*v/n.total):0;
+        $('.barra',b).style.width=p+'%';$('.cnt',b).textContent=n.total?v+' · '+p+'%':''})});
+    $$('.qrbox').forEach(q=>{const n=(res[q.dataset.caso]||{}).total||0;$('.n',q).textContent=n+(n===1?' voto':' votos')});
+    if($('#qrbig').classList.contains('show')){const n=(res[$('#qrbig').dataset.caso]||{}).total||0;const e=$('#qrbig .n');if(e)e.textContent=n+(n===1?' voto':' votos')}
+  },ok=>$$('.qrbox .n').forEach(e=>e.classList.toggle('off',!ok)));
+}
+function qrGrande(c){const b=$('#qrbig');
+  if(b.classList.contains('show')){b.classList.remove('show');return}
+  if(!c){const o=$('.slide.active .opts[data-caso]');if(!o)return;c=o.dataset.caso}
+  b.dataset.caso=c;b.innerHTML=Votos.qrSvg(URL_VOTO(c))+`<div class="tx">Aponte a câmera<br>e <b>vote</b><small>${URL_VOTO(c).replace('https://','')}</small><span class="n" style="display:block;margin-top:30px;font-size:34px"></span></div>`;
+  b.classList.add('show');
+}
+/* ---------- motor de slides ---------- */
+const KEY='aula-risco-sca-2026-2'+(AO_VIVO?'-vivo':'');
+let slides,cur=0,step=0;
+function maxStep(s){return Math.max(0,...$$('[data-step],[data-onstep]',s).map(e=>+(e.dataset.step??e.dataset.onstep)))}
+function render(){
+  slides.forEach((s,i)=>s.classList.toggle('active',i===cur));
+  const s=slides[cur],m=maxStep(s);
+  $$('[data-step]',s).forEach(e=>e.classList.toggle('on',+e.dataset.step<=step));
+  $$('[data-onstep]',s).forEach(e=>e.classList.toggle('on',+e.dataset.onstep<=step));
+  $('#bar').style.width=((cur+1)/slides.length*100)+'%';
+  $('#num').textContent=(cur+1)+' / '+slides.length;
+  $('#dots').innerHTML=Array.from({length:m},(_,i)=>`<i class="${i>=step?'on':''}"></i>`).join('');
+  history.replaceState(null,'','#'+(cur+1));try{localStorage.setItem(KEY,cur)}catch(e){}
+}
+function next(){if(step<maxStep(slides[cur]))step++;else if(cur<slides.length-1){cur++;step=0}render()}
+function prev(){if(step>0)step--;else if(cur>0){cur--;step=maxStep(slides[cur])}render()}
+function go(i){cur=Math.max(0,Math.min(slides.length-1,i));step=0;render()}
+function fit(){const k=Math.min(innerWidth/1600,innerHeight/900);$('#stage').style.transform=`translate(-50%,-50%) scale(${k})`}
+document.addEventListener('DOMContentLoaded',()=>{
+  chrome();build();aoVivo();slides=$$('.slide');
+  $$('.opts .vote').forEach(b=>b.addEventListener('click',()=>{$$('.vote',b.parentNode).forEach(x=>x.classList.toggle('chosen',x===b))}));
+  const h=parseInt(location.hash.slice(1));let saved=null;try{saved=localStorage.getItem(KEY)}catch(e){}
+  cur=h?h-1:(saved?+saved:0);if(!(cur>=0&&cur<slides.length))cur=0;
+  fit();render();
+});
+addEventListener('resize',fit);
+addEventListener('keydown',e=>{
+  if(['ArrowRight',' ','PageDown','ArrowDown','Enter'].includes(e.key)){e.preventDefault();next()}
+  else if(['ArrowLeft','PageUp','ArrowUp','Backspace'].includes(e.key)){e.preventDefault();prev()}
+  else if(e.key==='Home')go(0);else if(e.key==='End')go(slides.length-1);
+  else if(e.key==='f'||e.key==='F'){document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen()}
+  else if(e.key==='h'||e.key==='H'||e.key==='?')$('#help').classList.toggle('show');
+  else if(e.key==='q'||e.key==='Q')qrGrande();
+  else if(e.key==='v'||e.key==='V')document.body.classList.toggle('ver-votos');
+  else if(e.key==='Escape')$('#qrbig').classList.remove('show');
+});
+addEventListener('click',e=>{
+  if(e.target.closest('button,a,input,.calc,.chips,#help'))return;
+  if(e.target.closest('#qrbig')){$('#qrbig').classList.remove('show');return}
+  if(e.clientX<innerWidth*0.15)prev();else next();
+});
+</script>
+</body>
+</html>

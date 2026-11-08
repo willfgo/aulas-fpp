@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="pt-BR"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Quiz · Risco na dor torácica · FPP</title>
+<link rel="stylesheet" href="../assets/fpp.css">
+<meta name="theme-color" content="#005CA0">
+<style>
+#prog{height:6px;background:var(--azul-cl);margin:18px 0 6px}#prog i{display:block;height:100%;background:var(--azul);width:0;transition:width .4s}
+#cont{font-size:13px;color:var(--cinza);font-weight:700;letter-spacing:.1em;text-transform:uppercase}
+#q{font-size:18px;margin:12px 0 8px;line-height:1.55}
+#q b{color:var(--azul)}
+#fb{display:none}#fb.show{display:block}
+.nav{display:flex;gap:10px;margin-top:16px}
+#fim{display:none;text-align:left}
+#fim .placar{font-size:64px;font-weight:800;color:var(--azul);line-height:1}
+</style>
+</head><body>
+<header class="fpp"><div class="wrap">
+  <a href="./"><img src="../assets/img/fpp-logo-branco.png" alt="Faculdades Pequeno Príncipe"></a>
+  <p class="k">Risco na dor torácica · revisão</p>
+  <h1>Quiz com <span class="hl">casos novos</span></h1>
+  <p>10 situações de pronto-socorro. Responda, veja a explicação e siga.</p>
+</div></header>
+<main>
+  <div id="jogo">
+    <div id="prog"><i></i></div><div id="cont"></div>
+    <div id="q"></div>
+    <div id="ops"></div>
+    <div id="fb" class="box"></div>
+    <div class="nav"><button class="btn" id="prox" style="display:none">Próxima →</button></div>
+  </div>
+  <div id="fim">
+    <h2>Resultado</h2>
+    <p class="placar" id="placar"></p>
+    <p id="msg"></p>
+    <div class="nav"><button class="btn" onclick="location.reload()">Refazer</button><a class="btn lin" href="./">Página da aula</a></div>
+  </div>
+  <p class="src" style="margin-top:30px">Casos fictícios. Pontos de corte da troponina: ensaio Elecsys hs-cTnT, algoritmo 0/1 h (ESC 2023). Cada ensaio tem cortes próprios.</p>
+</main>
+<footer class="fpp"><span><a href="./">← página da aula</a></span><img src="../assets/img/fpp-logo-azul.png" alt="FPP"></footer>
+<script>
+const Q=[
+{q:'Mulher, 58 anos. Dor em aperto que começou <b>há 5 h</b> e já cedeu. ECG normal. hs-cTnT na admissão: <b>4 ng/L</b>. Como interpretar a troponina?',
+ o:['IAM descartado com uma única dosagem (rule-out); seguir para o HEART','É obrigatório repetir em 1 h antes de qualquer conclusão','Rule-in: IAM sem supra','Zona de observação: repetir em 3 h'],c:0,
+ e:'Valor &lt; 5 ng/L com dor iniciada há <b>mais de 3 h</b> permite o rule-out com uma dosagem. Descartar IAM não é alta automática: o próximo passo é o HEART.'},
+{q:'Homem, 50 anos. Dor iniciada <b>há 1 h</b>. hs-cTnT: 0 h = <b>9</b> · 1 h = <b>10</b> ng/L.',
+ o:['Rule-out','Observação','Rule-in','Não dá para concluir: repetir em 6 h'],c:0,
+ e:'0 h &lt; 12 e Δ1h = 1 (&lt; 3) → <b>rule-out</b>. Com dor há só 1 h, uma dosagem isolada não bastaria — por isso a de 1 h.'},
+{q:'hs-cTnT: 0 h = <b>25</b> · 1 h = <b>28</b> ng/L, paciente estável, sem dor.',
+ o:['Rule-out','Observação: 3ª dosagem em 3 h e ecocardiograma','Rule-in','Alta, pois a variação foi pequena'],c:1,
+ e:'Não preenche rule-out (0 h ≥ 12) nem rule-in (&lt; 52 e Δ1h = 3, abaixo de 5). É a <b>zona de observação</b>: nova dosagem em 3 h, eco e reavaliação clínica.'},
+{q:'hs-cTnT: 0 h = <b>18</b> · 1 h = <b>30</b> ng/L.',
+ o:['Rule-out','Observação','Rule-in: IAM sem supra','Erro de laboratório: repetir a 1ª dosagem'],c:2,
+ e:'Δ1h = 12 (≥ 5) → <b>rule-in</b>, mesmo com valores ainda abaixo de 52. O delta vale tanto quanto o valor absoluto.'},
+{q:'Homem, 67 anos, IAM já descartado pelo 0/1 h. História <b>moderadamente</b> suspeita, <b>BRE antigo</b>, HAS e DM, troponina normal. Qual o HEART e a conduta?',
+ o:['HEART 3 — alta com seguimento ambulatorial','HEART 5 — risco intermediário: estratificação antes de liberar','HEART 7 — cateterismo em 24 h','HEART 5 — alta, porque a troponina é normal'],c:1,
+ e:'História 1 · ECG 1 (BRE = repolarização inespecífica) · idade ≥ 65 = 2 · 1–2 fatores = 1 · troponina 0 → <b>5</b> (16,6% de MACE em 6 semanas). Não é candidato a alta direta.'},
+{q:'Homem, 70 anos. HAS, DM, tabagista, <b>stent prévio</b> na DA, usa <b>AAS</b>. Um episódio de dor hoje. ECG com <b>infra de ST de 0,5 mm</b>. Troponina normal. Qual o TIMI?',
+ o:['3','4','5','6'],c:2,
+ e:'Idade ≥ 65 (1) · ≥ 3 fatores (1) · DAC conhecida (1) · AAS em 7 dias (1) · ≥ 2 episódios em 24 h (0) · desvio de ST ≥ 0,5 mm (1) · marcador (0) = <b>5</b> → alto risco (26,2% em 14 dias).'},
+{q:'IAM sem supra, PA 130×80, <b>estertores em bases</b> e <b>B3</b>, sem hipoxemia. Qual a classe de Killip?',
+ o:['I','II','III','IV'],c:1,
+ e:'Estertores em bases, B3 ou turgência jugular = <b>Killip II</b>. III é edema agudo de pulmão; IV é choque cardiogênico. Killip ≥ II contraindica betabloqueador na fase aguda.'},
+{q:'IAM sem supra confirmado, SatO₂ <b>96%</b>, dor aliviada com nitrato, cateterismo marcado para daqui a <b>8 h</b>. Qual prescrição está correta?',
+ o:['O₂ por cateter nasal a 3 L/min de rotina','Morfina de horário para evitar recorrência da dor','AAS, anticoagulação e estatina de alta intensidade; inibidor de P2Y12 depois de conhecer a anatomia','Metoprolol EV mesmo se surgirem estertores'],c:2,
+ e:'O₂ só se SatO₂ &lt; 90%. Morfina não é rotina (atrasa a absorção do P2Y12 oral). Com cateterismo &lt; 24 h, <b>não há pré-tratamento rotineiro</b> com inibidor de P2Y12.'},
+{q:'IAM sem supra, estável, sem dor, sem arritmia, <b>GRACE 155</b>. Quando cateterizar?',
+ o:['Imediato (&lt; 2 h)','Precoce (&lt; 24 h)','Em até 72 h','Só se o teste não invasivo mostrar isquemia'],c:1,
+ e:'GRACE &gt; 140 e IAMSSST confirmado são critérios de <b>alto risco</b> → invasiva precoce (&lt; 24 h). Imediata é para instabilidade, dor refratária, arritmia grave, IC aguda ou complicação mecânica.'},
+{q:'Homem, 46 anos, IAM descartado no 0/1 h, ECG normal, história moderadamente suspeita, HAS, DM e tabagismo. HEART 4. Melhor próximo passo?',
+ o:['Alta sem seguimento','Cateterismo em 24 h','Estratificação não invasiva — angio-TC de coronárias é uma boa escolha','Repetir a troponina em 6 h e dar alta se normal'],c:2,
+ e:'HEART ≥ 4 não é alta direta. Sem rule-in, o caminho é estratificação não invasiva; a <b>angio-TC</b> tem alta sensibilidade e ótimo valor preditivo negativo para excluir DAC obstrutiva (teste funcional com imagem é alternativa).'}
+];
+let i=0,pts=0;const $=s=>document.querySelector(s);
+function mostra(){const it=Q[i];$('#cont').textContent=`Questão ${i+1} de ${Q.length}`;$('#prog i').style.width=(i/Q.length*100)+'%';
+  $('#q').innerHTML=it.q;$('#fb').classList.remove('show');$('#prox').style.display='none';$('#ops').innerHTML='';
+  it.o.forEach((o,k)=>{const b=document.createElement('button');b.className='opt';b.innerHTML=`<span class="lt">${'ABCD'[k]}</span><span>${o}</span>`;
+    b.onclick=()=>{if($('#ops').dataset.ok)return;$('#ops').dataset.ok=1;if(k===it.c)pts++;
+      [...$('#ops').children].forEach((x,j)=>{if(j===it.c)x.classList.add('ok');else if(j===k)x.classList.add('err')});
+      $('#fb').innerHTML=(k===it.c?'<b>Correto.</b> ':'<b>Não.</b> ')+it.e;$('#fb').classList.add('show');
+      $('#prox').textContent=i<Q.length-1?'Próxima →':'Ver resultado';$('#prox').style.display='inline-flex'};
+    $('#ops').appendChild(b)});delete $('#ops').dataset.ok;}
+$('#prox').onclick=()=>{i++;if(i<Q.length){mostra();scrollTo(0,0)}else{$('#jogo').style.display='none';$('#fim').style.display='block';
+  $('#placar').textContent=pts+'/'+Q.length;$('#msg').textContent=pts>=8?'Muito bem — pronto para o plantão.':pts>=5?'Bom caminho. Revise o algoritmo 0/1 h e o HEART.':'Vale rever a aula e o resumo em PDF.';}};
+mostra();
+</script>
+</body></html>

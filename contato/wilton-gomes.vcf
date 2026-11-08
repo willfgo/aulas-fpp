@@ -1,0 +1,13 @@
+BEGIN:VCARD
+VERSION:3.0
+N:Gomes;Wilton;Francisco;Dr.;
+FN:Dr. Wilton Gomes
+TITLE:Cardiologista intervencionista
+ORG:Faculdades Pequeno Príncipe
+TEL;TYPE=CELL,WORK:+55 41 98848-4821
+EMAIL;TYPE=WORK:wilton.gomes@professor.fpp.edu.br
+URL:https://willfgo.github.io/aulas-fpp/contato/
+X-SOCIALPROFILE;TYPE=instagram:https://www.instagram.com/wiltongomesmd
+X-SOCIALPROFILE;TYPE=linkedin:https://www.linkedin.com/in/wiltongomesmd
+NOTE:OneHeart · oneheart.net.br · CRM-PR 24914
+END:VCARD

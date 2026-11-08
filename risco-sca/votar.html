@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="pt-BR"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Votar · Risco na dor torácica · FPP</title>
+<link rel="stylesheet" href="../assets/fpp.css">
+<meta name="theme-color" content="#005CA0">
+<style>
+header.fpp{padding:16px 18px 20px}header.fpp img{height:28px;margin-bottom:14px}
+main{padding-top:4px}
+.caso{margin:16px 0 8px}
+#status{position:sticky;bottom:0;background:#fff;border-top:1px solid var(--linha);padding:14px 4px;font-size:15px;min-height:52px}
+#status.ok{background:var(--azul-cl);color:var(--azul-esc);font-weight:700}
+#status.erro{background:#fff7c2}
+.opt{font-size:18px;padding:14px 2px}
+.opt[disabled]{opacity:.6}
+</style>
+</head><body>
+<header class="fpp"><div class="wrap">
+  <img src="../assets/img/fpp-logo-branco.png" alt="Faculdades Pequeno Príncipe">
+  <p class="k" id="kick">Votação ao vivo</p>
+  <h1 id="tit">Carregando…</h1>
+</div></header>
+<main>
+  <div class="caso" id="texto"></div>
+  <p style="font-weight:800;color:var(--azul);margin:18px 0 4px" id="perg"></p>
+  <div id="opts"></div>
+  <p class="src" style="margin-top:14px">Voto anônimo. Você pode trocar a resposta até o professor revelar.</p>
+  <div id="status"></div>
+</main>
+<script src="../assets/firebase.js"></script>
+<script src="../assets/votos.js"></script>
+<script src="casos.js"></script>
+<script>
+const P=new URLSearchParams(location.search), sala=Votos.limpa(P.get('s')||'teste'), cid=Votos.limpa(P.get('c')||'c1');
+const C=CASOS[cid], st=document.getElementById('status');
+if(!C){document.getElementById('tit').textContent='Caso não encontrado';}
+else{
+  const [k,...t]=C.titulo.split(' · ');
+  document.getElementById('kick').textContent=k+' · vote';
+  document.getElementById('tit').textContent=t.join(' · ');
+  document.getElementById('texto').innerHTML=C.texto;
+  document.getElementById('perg').textContent=C.pergunta;
+  const box=document.getElementById('opts'), chave='voto-'+sala+'-'+cid, ant=localStorage.getItem(chave);
+  C.opcoes.forEach((o,i)=>{
+    const L='ABCDE'[i], b=document.createElement('button');
+    b.className='opt'+(ant===L?' sel':'');b.innerHTML=`<span class="lt">${L}</span><span>${o}</span>`;
+    b.onclick=async()=>{
+      [...box.children].forEach(x=>x.disabled=true);st.className='';st.textContent='Enviando…';
+      try{await Votos.votar(sala,cid,L);localStorage.setItem(chave,L);
+        [...box.children].forEach(x=>x.classList.toggle('sel',x===b));
+        st.className='ok';st.textContent='Voto registrado: '+L+'. Olhe para o telão!';}
+      catch(e){st.className='erro';st.textContent='Não consegui registrar (sem internet?). Tente de novo.';}
+      [...box.children].forEach(x=>x.disabled=false);
+    };
+    box.appendChild(b);
+  });
+  if(ant){st.className='ok';st.textContent='Você votou '+ant+'. Pode trocar se quiser.';}
+  Votos.token().catch(()=>{st.className='erro';st.textContent='Sem conexão com o servidor de votos.';});
+}
+</script>
+</body></html>
