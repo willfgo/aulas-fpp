@@ -8,13 +8,13 @@
 @page{size:A4;margin:0}
 :root{--azul:#005CA0;--azul-esc:#034578;--amar:#FFDD09;--azul-cl:#e6f0f8;--linha:#d3dbe5;--cinza:#5f6b7a}
 *{box-sizing:border-box}
-body{margin:0;font-family:Montserrat,Arial,sans-serif;color:#1a1a1a;font-size:9.3pt;line-height:1.4;width:210mm;height:297mm;position:relative}
+body{margin:0;font-family:Montserrat,Arial,sans-serif;color:#1a1a1a;font-size:8.5pt;line-height:1.33;width:210mm;height:297mm;position:relative}
 .top{background:var(--azul);color:#fff;padding:7mm 11mm 5mm;display:flex;justify-content:space-between;align-items:flex-end}
 .top h1{margin:0;font-size:17pt;font-weight:800;text-transform:uppercase;line-height:1.05}
 .top h1 span{background:var(--amar);color:var(--azul);padding:0 3px}
 .top p{margin:2mm 0 0;font-size:8.5pt;color:#dce9f5}
 .top img{height:9mm}
-.g{display:grid;grid-template-columns:1fr 1fr;gap:5mm 7mm;padding:6mm 11mm 0}
+.g{display:grid;grid-template-columns:1fr 1fr;gap:4mm 7mm;padding:5mm 11mm 0}
 h2{margin:0 0 1.5mm;font-size:8.6pt;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--azul);border-top:2.5px solid var(--azul);padding-top:1.5mm}
 h2 i{font-style:normal;background:var(--amar);padding:0 4px;margin-right:4px}
 table{width:100%;border-collapse:collapse;font-size:8.6pt}
@@ -30,13 +30,15 @@ ul{margin:0;padding-left:4mm}li{margin:0 0 .8mm}
 .tl{display:grid;grid-template-columns:1fr 1fr 1fr;gap:2mm}
 .tl div{border-top:3px solid var(--azul);padding-top:1mm}
 .tl div:first-child{border-color:var(--azul-esc)}.tl div:nth-child(2){border-color:var(--amar)}
+.glos{position:absolute;left:11mm;right:11mm;bottom:18.5mm;font-size:6.4pt;line-height:1.33;color:#034578;border-top:1px solid #d3dbe5;padding-top:1.6mm}
+.glos b{color:#034578}
 .rod{position:absolute;left:11mm;right:11mm;bottom:7mm;border-top:1px solid var(--linha);padding-top:2mm;font-size:6.6pt;color:var(--cinza);display:flex;justify-content:space-between;gap:6mm}
 </style></head><body>
 <div class="top"><div><h1>Dor torácica na emergência:<br><span>estratificação de risco</span></h1><p>Resumo da aula · Prof. Wilton F. Gomes · Medicina 8º período · 2026</p></div><img src="../assets/img/fpp-logo-branco.png"></div>
 <div class="g">
   <div class="full">
     <h2><i>1</i>É infarto? ECG em 10 min + troponina ultrassensível 0/1 h</h2>
-    <p style="margin:0">Supra de ST ou instabilidade pulam a estratificação. Sem supra e estável: dosar hs-cTn na chegada e em 1 h (ou 0/2 h). Cortes abaixo: <b>Elecsys hs-cTnT</b>, ng/L — cada ensaio tem os seus.</p>
+    <p style="margin:0">Supra de ST ou instabilidade pulam a estratificação. Sem supra e estável: dosar hs-cTn na chegada e em 1 h (ou 0/2 h). Referência (percentil 99) da <b>Elecsys hs-cTnT: até 14 ng/L</b>. Cortes abaixo para esse ensaio, em ng/L — cada ensaio tem os seus.</p>
     <div class="f3">
       <div class="ro"><strong>Rule-out</strong><b>0 h &lt; 5</b> e dor &gt; 3 h, ou <b>0 h &lt; 12</b> e <b>Δ1h &lt; 3</b> → IAM descartado; aplicar o HEART.</div>
       <div class="ob"><strong>Observação</strong>Nenhum dos critérios → 3ª dosagem em 3 h + ecocardiograma; reavaliar.</div>
@@ -50,7 +52,7 @@ ul{margin:0;padding-left:4mm}li{margin:0 0 .8mm}
       <tr><td><b>ECG</b></td><td>normal</td><td>repol. inespecífica</td><td>desvio de ST</td></tr>
       <tr><td><b>Idade</b></td><td>&lt; 45</td><td>45–64</td><td>≥ 65</td></tr>
       <tr><td><b>Risco</b></td><td>nenhum</td><td>1–2 fatores</td><td>≥ 3 ou DAC</td></tr>
-      <tr><td><b>Troponina</b></td><td>normal</td><td>1–3×</td><td>&gt; 3×</td></tr></table>
+      <tr><td><b>Troponina</b></td><td>≤ referência (≤ 14 ng/L)</td><td>1–3× (15–42)</td><td>&gt; 3× (&gt; 42)</td></tr></table>
     <p style="margin:1.5mm 0 0">MACE 6 semanas: <b>0–3: 1,7%</b> · 4–6: 16,6% · 7–10: 50,1%.<br><b>HEART ≤ 3 + rule-out → alta</b> com reavaliação ambulatorial. HEART ≥ 4 → estratificação não invasiva. Não usar se história muito suspeita, troponina em curva, ECG isquêmico ou instabilidade.</p>
   </div>
   <div>
@@ -86,5 +88,8 @@ ul{margin:0;padding-left:4mm}li{margin:0 0 .8mm}
     <p style="margin:0"><b>Angio-TC de coronárias</b>: sensibilidade ~97%, ótimo VPN — exclui DAC obstrutiva. <b>Funcionais com imagem</b> (eco de estresse, cintilografia, RM de estresse): localizam e quantificam isquemia. <b>Ergométrico</b>: sens. ~58%, espec. ~62%; não interpretável com BRE, pré-excitação, marca-passo ou ST basal alterado (Knuuti 2018).</p>
   </div>
 </div>
+<div class="glos" id="glos"></div>
 <div class="rod"><span>Byrne RA et al. ESC 2023 (Eur Heart J 2023;44:3720) · Rao SV et al. ACC/AHA 2025 (Circulation 2025;151:e771) · Diretriz SBC Dor Torácica 2025 (Arq Bras Cardiol 2025;122(9):e20250620) · Nicolau JC et al. SBC AI/IAMSSST 2021 · Six 2008 / Backus 2013 (HEART) · Antman 2000 (TIMI) · Granger 2003 (GRACE) · Killip 1967 · Subherwal 2009 · Urban 2019 · Fox 2010 · Knuuti 2018.</span><span style="white-space:nowrap">willfgo.github.io/aulas-fpp/risco-sca</span></div>
+<script src="../assets/glossario.js"></script>
+<script>const c=document.body.cloneNode(true);c.querySelector(".rod").remove();document.getElementById("glos").innerHTML=legendaHTML(c.textContent);</script>
 </body></html>

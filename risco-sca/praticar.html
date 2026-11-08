@@ -30,7 +30,7 @@
 </div></header>
 <main>
 <h2>HEART score</h2>
-<p class="src">Para decidir alta após descartar IAM com troponina. Six 2008 · Backus 2013.</p>
+<p class="src">Para decidir alta após descartar IAM (infarto agudo do miocárdio) com troponina. Referência da hs-cTnT (troponina T ultrassensível): até 14 ng/L. Six 2008 · Backus 2013.</p>
 <div class="calc" id="heart"></div>
 <div class="res"><strong id="hT">—</strong><span id="hC"></span></div>
 <div class="escala" id="hE"><span>0–3 · baixo · 1,7%</span><span>4–6 · intermediário · 16,6%</span><span>7–10 · alto · 50,1%</span></div>
@@ -60,10 +60,11 @@
 <div id="casos"></div>
 </main>
 <footer class="fpp"><span><a href="./">← página da aula</a></span><img src="../assets/img/fpp-logo-azul.png" alt="FPP"></footer>
+<script src="../assets/glossario.js"></script>
 <script src="casos.js"></script>
 <script>
 const $=s=>document.querySelector(s);
-const H=[['História',['Pouco suspeita','Moderadamente suspeita','Altamente suspeita']],['ECG',['Normal','Repolarização inespecífica (BRE, HVE, MP)','Desvio de ST significativo']],['Idade',['< 45','45–64','≥ 65']],['Risco',['Nenhum fator','1–2 fatores','≥ 3 ou aterosclerose conhecida']],['Troponina',['≤ limite normal','1–3× o limite','> 3× o limite']]];
+const H=[['História',['Pouco suspeita','Moderadamente suspeita','Altamente suspeita']],['ECG',['Normal','Repolarização inespecífica (BRE, HVE, MP)','Desvio de ST significativo']],['Idade',['< 45','45–64','≥ 65']],['Risco',['Nenhum fator','1–2 fatores','≥ 3 ou aterosclerose conhecida']],['Troponina',['≤ referência (hs-cTnT ≤ 14 ng/L)','1–3× (15–42 ng/L)','> 3× (> 42 ng/L)']]];
 const hv=Array(5).fill(null);
 H.forEach(([l,os],i)=>{const d=document.createElement('div');d.className='linha';d.innerHTML=`<div class="l">${l}</div>`;
   os.forEach((o,p)=>{const b=document.createElement('button');b.className='o';b.innerHTML=`<b>${p}</b> ${o}`;b.onclick=()=>{hv[i]=p;[...d.querySelectorAll('.o')].forEach((x,k)=>x.classList.toggle('sel',k===p));hU()};d.appendChild(b)});$('#heart').appendChild(d)});
@@ -82,7 +83,7 @@ function hbrU(){const ma=document.querySelectorAll('#hbrMa .sel').length,me=docu
   $('#hbrT').textContent=ma+' maior'+(ma===1?'':'es')+' · '+me+' menor'+(me===1?'':'es');$('#hbrC').innerHTML=ma>=1||me>=2?' <span class="hl">alto risco de sangramento</span>':' sem critério de alto risco'}
 hbrU();
 for(const id in CASOS){const C=CASOS[id],d=document.createElement('div');
-  d.innerHTML=`<h3 style="margin-top:26px">${C.titulo}</h3><div class="caso">${C.texto}</div><p style="font-weight:800;color:var(--azul);margin:14px 0 2px">${C.pergunta}</p><div class="ops"></div><div class="box reveal">${C.explica}</div>`;
+  d.innerHTML=`<h3 style="margin-top:26px">${C.titulo}</h3><div class="caso">${C.texto}</div><p style="font-weight:800;color:var(--azul);margin:14px 0 2px">${C.pergunta}</p><div class="ops"></div><div class="box reveal">${C.explica}</div><p class="src">${legendaHTML(C.texto+" "+C.opcoes.join(" ")+" "+C.explica)}</p>`;
   const ops=d.querySelector('.ops'),rv=d.querySelector('.reveal');
   C.opcoes.forEach((o,i)=>{const L='ABCD'[i],b=document.createElement('button');b.className='opt';b.innerHTML=`<span class="lt">${L}</span><span>${o}</span>`;
     b.onclick=()=>{[...ops.children].forEach((x,k)=>{x.classList.remove('sel','ok','err');if('ABCD'[k]===C.certa)x.classList.add('ok')});if(L!==C.certa)b.classList.add('err');rv.classList.add('show')};ops.appendChild(b)});

@@ -83,7 +83,7 @@ svg text{font-family:Montserrat,Arial,sans-serif}
 .flow svg.flowsvg{position:absolute;inset:0;overflow:visible;pointer-events:none}
 .edge{fill:none;stroke-width:2.5}
 .node{position:absolute;display:flex;align-items:center;justify-content:center;text-align:center;font-size:21px;line-height:1.28;border-radius:3px;padding:8px 14px;background:#fff;border:2px solid var(--azul);color:var(--tinta)}
-.node small{display:block;font-size:17px;font-weight:500;text-transform:none;letter-spacing:0;margin-top:3px}
+.node small{display:block;font-size:17px;font-weight:500;text-transform:none;letter-spacing:0;margin-top:3px;color:inherit}
 .node.navy{background:var(--azul);color:#fff;font-weight:700}
 .node.navy b{color:#fff}
 .node.lnavy,.node.lgreen,.node.lamber,.node.lred{background:#fff}
@@ -214,6 +214,12 @@ html,body{touch-action:manipulation}
 .hbr-regra .veredito{width:420px;padding:14px 18px;font-weight:800;font-size:20px;text-transform:uppercase;letter-spacing:.03em;background:var(--azul-cl);color:var(--azul-esc);text-align:center;transition:background .3s}
 .hbr-regra .veredito.alto{background:var(--azul-esc);color:#fff}
 .hbr-regra .veredito.alto:after{content:"";display:block;height:4px;background:var(--amar);margin-top:8px}
+
+.rod{height:auto;min-height:52px;padding-top:7px;align-items:flex-end;padding-bottom:4px}
+.rod .esq{display:flex;flex-direction:column;gap:3px;min-width:0}
+.rod .leg{font-size:12.5px;line-height:1.35;color:var(--azul-esc)}
+.rod .leg b{color:var(--azul-esc)}
+.ref{font-size:.82em;color:var(--cinza);font-weight:500;white-space:nowrap}
 </style>
 </head>
 <body>
@@ -263,7 +269,7 @@ html,body{touch-action:manipulation}
       Dor em pontada no hemitórax esquerdo, piora à inspiração profunda, iniciada <b>há 4 h</b>.<br>
       PA 128×78 mmHg · FC 76 bpm · exame físico normal.<br>
       ECG: ritmo sinusal, <b>normal</b>.<br>
-      hs-cTnT na admissão: <b>3 ng/L</b>.
+      hs-cTnT na admissão: <b>3 ng/L</b> <span class="ref">(referência: até 14 ng/L)</span>.
     </div>
     <div>
       <p style="margin-top:0"><b>Qual a conduta?</b></p>
@@ -298,7 +304,7 @@ html,body{touch-action:manipulation}
   <div class="kicker">Pergunta 1 · É infarto?</div>
   <h2>Algoritmo <span class="hl">0/1 h</span> — troponina T ultrassensível</h2>
   <div id="flow01" class="flow" style="width:1440px;height:560px"></div>
-  <p data-step="5" class="small" style="margin-top:6px">Pontos de corte do ensaio <b>Elecsys hs-cTnT</b> (ESC 2023). Cada ensaio tem os seus — use os do seu laboratório. A SBC 2025 aceita 0/1 h ou 0/2 h como primeira escolha.</p>
+  <p data-step="5" class="small" style="margin-top:6px">Referência (percentil 99) da <b>Elecsys hs-cTnT</b>: <b>até 14 ng/L</b>. Pontos de corte do algoritmo para esse ensaio (ESC 2023). Cada ensaio tem os seus — use os do seu laboratório. A SBC 2025 aceita 0/1 h ou 0/2 h como primeira escolha.</p>
   <div class="src">Byrne RA et al. 2023 ESC Guidelines for ACS. Eur Heart J 2023 · Diretriz SBC de Dor Torácica na Emergência 2025.</div>
 </section>
 
@@ -338,7 +344,7 @@ html,body{touch-action:manipulation}
   <h2>Pontada no peito há <span class="hl">4 horas</span></h2>
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:40px">
     <div>
-      <div class="answer" data-step="1"><b>Troponina:</b> hs-cTnT 0 h = 3 ng/L (&lt; 5) com dor há &gt; 3 h → <b>rule-out</b> com uma única dosagem.</div>
+      <div class="answer" data-step="1"><b>Troponina:</b> hs-cTnT 0 h = 3 ng/L (referência até 14; abaixo de 5) com dor há &gt; 3 h → <b>rule-out</b> com uma única dosagem.</div>
       <div class="answer" data-step="2" style="margin-top:16px"><b>HEART = 1</b><br>História pouco suspeita 0 · ECG normal 0 · Idade &lt; 45 0 · 1 fator de risco 1 · Troponina normal 0</div>
       <div class="warn" data-step="4" style="margin-top:16px">E se a dor tivesse começado <b>há 1 h</b>? Uma dosagem não basta: <b>repetir em 1 h</b> e aplicar o delta.</div>
     </div>
@@ -463,10 +469,10 @@ html,body{touch-action:manipulation}
         <b>2 episódios</b> de dor em aperto em repouso nas últimas 24 h; o último há 2 h.<br>
         PA 150×90 · FC 84 · pulmões limpos. Creatinina 1,3.<br>
         ECG: <b>infra de ST 1 mm</b> em V4–V6.<br>
-        hs-cTnT: 0 h = <b>38</b> · 1 h = <b>61</b> ng/L.
+        hs-cTnT: 0 h = <b>38</b> · 1 h = <b>61</b> ng/L <span class="ref">(referência: até 14 ng/L)</span>.
       </div>
       <div class="answer" data-step="2" style="margin-top:16px">
-        Δ1h = 23 e 1 h ≥ 52 → <b>rule-in: IAMSSST</b> · Killip I<br>
+        Δ1h = 23 e 1 h ≥ 52 (≈ 4× a referência de 14) → <b>rule-in: IAMSSST</b> · Killip I<br>
         <b>TIMI 6</b> (idade, ≥ 3 FR, AAS, ≥ 2 episódios, ST, marcador) → 40,9%<br>
         <b>GRACE ≈ 160</b> (&gt; 140) → alto risco
       </div>
@@ -664,6 +670,7 @@ html,body{touch-action:manipulation}
 <script src="../assets/firebase.js"></script>
 <script src="../assets/qrcode.js"></script>
 <script src="../assets/votos.js"></script>
+<script src="../assets/glossario.js"></script>
 <div id="toque"><button id="tPrev" aria-label="Voltar">‹</button><span class="meio"><button id="tQR" aria-label="QR da votação">QR</button><button id="tFS" aria-label="Tela cheia">⤢</button></span><button id="tNext" aria-label="Avançar">›</button></div>
 <div id="girar"><span>Gire o celular para a horizontal ⟳</span></div>
 <script>
@@ -725,7 +732,7 @@ function tropo(){
   txt(el('text',{x:30,y:270,class:'catsub','text-anchor':'middle',transform:'rotate(-90 30 270)'},svg),'troponina (ng/L)');
   const g1=el('g',{'data-step':1},svg);
   el('line',{x1:80,y1:Y(14),x2:980,y2:Y(14),stroke:'#005CA0','stroke-width':3,'stroke-dasharray':'10 8'},g1);
-  txt(el('text',{x:975,y:Y(14)-10,'text-anchor':'end',fill:'#005CA0','font-size':20,'font-weight':700},g1),'percentil 99 — ultrassensível');
+  txt(el('text',{x:975,y:Y(14)-10,'text-anchor':'end',fill:'#005CA0','font-size':20,'font-weight':700},g1),'percentil 99 da hs-cTnT = 14 ng/L (limite da referência)');
   el('line',{x1:80,y1:Y(80),x2:980,y2:Y(80),stroke:'#9aa7b4','stroke-width':3,'stroke-dasharray':'10 8'},g1);
   txt(el('text',{x:95,y:Y(80)-10,'text-anchor':'start',fill:'#6b7280','font-size':20,'font-weight':700},g1),'limiar da troponina convencional');
   let d='';for(let t=0;t<=12.01;t+=0.1)d+=(t?'L':'M')+X(t).toFixed(1)+' '+Y(V(t)).toFixed(1);
@@ -745,7 +752,7 @@ const HEART=[['História',['Pouco suspeita','Moderadamente suspeita','Altamente 
  ['ECG',['Normal','Repolarização inespecífica','Desvio de ST significativo']],
  ['Idade',['< 45 anos','45–64 anos','≥ 65 anos']],
  ['Fatores de risco',['Nenhum','1–2 fatores','≥ 3 ou aterosclerose conhecida']],
- ['Troponina',['≤ limite normal','1–3× o limite','> 3× o limite']]];
+ ['Troponina',['≤ referência (hs-cTnT ≤ 14 ng/L)','1–3× a referência (15–42)','> 3× a referência (> 42)']]];
 let hv=Array(5).fill(null),hChart,tChart;
 function heartInit(){
   const c=$('#heartcalc');
@@ -843,7 +850,7 @@ function build(){
 function chrome(){
   $$('.slide').forEach(s=>{if(s.id==='capa'||s.id==='fim')return;
     const t=document.createElement('div');t.className='topo';s.prepend(t);
-    const r=document.createElement('div');r.className='rod';const src=$('.src',s);r.appendChild(src||document.createElement('span'));
+    const r=document.createElement('div');r.className='rod';const esq=document.createElement('div');esq.className='esq';const lg=document.createElement('div');lg.className='leg';esq.appendChild(lg);const src=$('.src',s);if(src)esq.appendChild(src);r.appendChild(esq);
     const im=document.createElement('img');im.src='../assets/img/fpp-logo-azul.png';im.alt='FPP';r.appendChild(im);s.appendChild(r)});
   $$('.opts .vote').forEach(b=>{const m=b.innerHTML.match(/^\s*([A-D]) · ([\s\S]*)$/);if(m)b.innerHTML=`<span class="lt">${m[1]}</span><span>${m[2]}</span>`});
 }
@@ -876,6 +883,11 @@ function qrGrande(c){const b=$('#qrbig');
   b.dataset.caso=c;b.innerHTML=Votos.qrSvg(URL_VOTO(c))+`<div class="tx">Aponte a câmera<br>e <b>vote</b><small>${URL_VOTO(c).replace('https://','')}</small><span class="n" style="display:block;margin-top:30px;font-size:34px"></span></div>`;
   b.classList.add('show');
 }
+function legendas(){
+  $$('.slide').forEach(s=>{const lg=$('.rod .leg',s);if(!lg)return;
+    const c=s.cloneNode(true);c.querySelectorAll('.rod,.src,.qrbox,.kicker').forEach(e=>e.remove());
+    lg.innerHTML=legendaHTML(c.textContent)});
+}
 /* ---------- motor de slides ---------- */
 const KEY='aula-risco-sca-2026-2'+(AO_VIVO?'-vivo':'');
 let slides,cur=0,step=0;
@@ -895,7 +907,7 @@ function prev(){if(step>0)step--;else if(cur>0){cur--;step=maxStep(slides[cur])}
 function go(i){cur=Math.max(0,Math.min(slides.length-1,i));step=0;render()}
 function fit(){const k=Math.min(innerWidth/1600,innerHeight/900);$('#stage').style.transform=`translate(-50%,-50%) scale(${k})`}
 document.addEventListener('DOMContentLoaded',()=>{
-  chrome();build();aoVivo();slides=$$('.slide');
+  chrome();build();aoVivo();legendas();slides=$$('.slide');
   $$('.opts .vote').forEach(b=>b.addEventListener('click',()=>{$$('.vote',b.parentNode).forEach(x=>x.classList.toggle('chosen',x===b))}));
   const h=parseInt(location.hash.slice(1));let saved=null;try{saved=localStorage.getItem(KEY)}catch(e){}
   cur=h?h-1:(saved?+saved:0);if(!(cur>=0&&cur<slides.length))cur=0;
