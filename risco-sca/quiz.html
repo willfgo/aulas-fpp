@@ -56,7 +56,7 @@
 <script src="quiz-dados.js"></script>
 <script>
 const Q=QUIZ;
-const FORM='risco-sca-quiz';let i=0,pts=0;const $=s=>document.querySelector(s);
+const FORM='risco-sca-quiz'+(new URLSearchParams(location.search).has('teste')?'-teste':'');let i=0,pts=0;const $=s=>document.querySelector(s);
 function mostra(){const it=Q[i];$('#cont').textContent=`Questão ${i+1} de ${Q.length}`;$('#prog i').style.width=(i/Q.length*100)+'%';
   $('#q').innerHTML=it.q;$('#perg').innerHTML=it.p||'';$('#leg').innerHTML=legendaHTML(it.q+' '+(it.p||'')+' '+it.o.join(' ')+' '+it.e);$('#fb').classList.remove('show');$('#prox').style.display='none';$('#ops').innerHTML='';
   it.o.forEach((o,k)=>{const b=document.createElement('button');b.className='opt';b.innerHTML=`<span class="lt">${'ABCD'[k]}</span><span>${o}</span>`;
