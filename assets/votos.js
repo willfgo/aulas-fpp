@@ -4,7 +4,13 @@
   const FB = window.FB;
   const limpa = s => String(s || '').toLowerCase().replace(/[^a-z0-9-]/g, '').slice(0, 40);
 
-  async function token() {
+  let _tok = null, _pend = null;
+  function token() {
+    if (_tok && _tok.exp > Date.now() + 60000) return Promise.resolve(_tok);
+    if (!_pend) _pend = _token().then(t => (_tok = t)).finally(() => { _pend = null; });
+    return _pend;
+  }
+  async function _token() {
     let t = null;
     try { t = JSON.parse(localStorage.getItem('fb-anon') || 'null'); } catch (e) {}
     if (t && t.exp > Date.now() + 60000) return t;
@@ -74,7 +80,11 @@
   }
 
   // Banco de itens: grava só a 1ª resposta de cada item (regra do banco recusa a 2ª). Anônimo.
-  async function registrar(form, item, letra) {
+  const _fila = [];
+  function registrar(form, item, letra) { const pr = _registrar(form, item, letra); _fila.push(pr); return pr; }
+  function pendentes() { return Promise.allSettled(_fila.splice(0)); }
+  async function _registrar(form, item, letra) {
+    if (!item) return;
     try {
       const t = await token();
       await fetch(`${FB.db}/respostas/${limpa(form)}/${t.uid}/${item}.json?auth=${t.id}`, { method: 'PUT', body: JSON.stringify({ r: letra, t: { '.sv': 'timestamp' } }) });
@@ -87,5 +97,5 @@
     } catch (e) {}
   }
 
-  window.Votos = { votar, ouvir, token, qrSvg, limpa, registrar, contexto };
+  window.Votos = { votar, ouvir, token, qrSvg, limpa, registrar, contexto, pendentes };
 })();

@@ -2,7 +2,7 @@
 <html lang="pt-BR"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Quiz · Risco na dor torácica · FPP</title>
-<link rel="stylesheet" href="../assets/fpp.css">
+<link rel="stylesheet" href="../assets/fpp.css?v=202611081040">
 <meta name="theme-color" content="#005CA0">
 <style>
 #prog{height:6px;background:var(--azul-cl);margin:18px 0 6px}#prog i{display:block;height:100%;background:var(--azul);width:0;transition:width .4s}
@@ -49,11 +49,11 @@
   <p class="src" style="margin-top:30px">Casos fictícios. Troponina: hs-cTnT (Elecsys), referência — percentil 99 — até 14 ng/L; cortes do algoritmo 0/1 h da ESC 2023 para esse ensaio. Cada ensaio tem cortes próprios.</p>
 </main>
 <footer class="fpp"><span><a href="./">← página da aula</a></span><img src="../assets/img/fpp-logo-azul.png" alt="FPP"></footer>
-<script src="../assets/firebase.js"></script>
-<script src="../assets/qrcode.js"></script>
-<script src="../assets/votos.js"></script>
-<script src="../assets/glossario.js"></script>
-<script src="quiz-dados.js"></script>
+<script src="../assets/firebase.js?v=202611081040"></script>
+<script src="../assets/qrcode.js?v=202611081040"></script>
+<script src="../assets/votos.js?v=202611081040"></script>
+<script src="../assets/glossario.js?v=202611081040"></script>
+<script src="quiz-dados.js?v=202611081040"></script>
 <script>
 const Q=QUIZ;
 const FORM='risco-sca-quiz'+(new URLSearchParams(location.search).has('teste')?'-teste':'');let i=0,pts=0;const $=s=>document.querySelector(s);
@@ -65,7 +65,7 @@ function mostra(){const it=Q[i];$('#cont').textContent=`Questão ${i+1} de ${Q.l
       $('#fb').innerHTML=(k===it.c?'<b>Correto.</b> ':'<b>Não.</b> ')+it.e;$('#fb').classList.add('show');
       $('#prox').textContent=i<Q.length-1?'Próxima →':'Ver resultado';$('#prox').style.display='inline-flex'};
     $('#ops').appendChild(b)});delete $('#ops').dataset.ok;}
-$('#prox').onclick=()=>{i++;if(i<Q.length){mostra();scrollTo(0,0)}else{$('#jogo').style.display='none';$('#fim').style.display='block';
+$('#prox').onclick=async()=>{i++;if(i<Q.length){mostra();scrollTo(0,0)}else{$('#prox').disabled=true;await Votos.pendentes();$('#jogo').style.display='none';$('#fim').style.display='block';
   $('#placar').textContent=pts+'/'+Q.length;$('#msg').textContent=pts>=8?'Muito bem — pronto para o plantão.':pts>=5?'Bom caminho. Revise o algoritmo 0/1 h e o HEART.':'Vale rever a aula e o resumo em PDF.';}};
 $('#comecar').onclick=()=>{Votos.contexto(FORM,{modo:'quiz',periodo:$('#periodo').value});$('#inicio').style.display='none';$('#jogo').style.display='block';mostra();scrollTo(0,0)};
 </script>

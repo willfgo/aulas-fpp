@@ -2,7 +2,7 @@
 <html lang="pt-BR"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Votar · Risco na dor torácica · FPP</title>
-<link rel="stylesheet" href="../assets/fpp.css">
+<link rel="stylesheet" href="../assets/fpp.css?v=202611081040">
 <meta name="theme-color" content="#005CA0">
 <style>
 header.fpp{padding:16px 18px 20px}header.fpp img{height:28px;margin-bottom:14px}
@@ -28,10 +28,10 @@ main{padding-top:4px}
   <p class="src" style="margin-top:8px">Voto anônimo; a primeira resposta é usada, sem identificação, para avaliar a qualidade das questões. Você pode trocar a resposta até o professor revelar.</p>
   <div id="status"></div>
 </main>
-<script src="../assets/firebase.js"></script>
-<script src="../assets/votos.js"></script>
-<script src="../assets/glossario.js"></script>
-<script src="casos.js"></script>
+<script src="../assets/firebase.js?v=202611081040"></script>
+<script src="../assets/votos.js?v=202611081040"></script>
+<script src="../assets/glossario.js?v=202611081040"></script>
+<script src="casos.js?v=202611081040"></script>
 <script>
 const P=new URLSearchParams(location.search), sala=Votos.limpa(P.get('s')||'teste'), cid=Votos.limpa(P.get('c')||'c1');
 const C=CASOS[cid], st=document.getElementById('status');
